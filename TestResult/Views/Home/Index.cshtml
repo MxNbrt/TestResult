@@ -1,16 +1,7 @@
-﻿@{  
-ViewBag.Title = "Welcome";  
-}  
+﻿@{  ViewBag.Title = "Welcome";  }  
   
-<style>  
-table, tr, td, th {  
-border: 1px solid #ccc;  
-padding: 10px;  
-margin: 10px;  
-}  
-</style> 
-<body data-ng-app="APIModule">  
-    <div id="tblSubs" ng-controller="APIController">  
+<body>  
+    <div id="tblSubs" ng-controller="DatabaseCtrl">  
         <table>  
             <tr>  
                 <th>AppArea</th>  
@@ -28,5 +19,4 @@ margin: 10px;
             </tbody>  
         </table>  
     </div>  
-</body>  
-<script src="~/customscripts/Controller.js"></script> 
+</body>

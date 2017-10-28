@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html>
+<html data-ng-app="TestResultApp">
   <head>
     <meta charset="utf-8">
 
@@ -11,41 +11,54 @@
     @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/jquery")
 
-    <script src="~/scripts/jquery-1.8.2.min.js"></script>    
-    <script src="~/Scripts/angular.min.js"></script>  
-    <script src="~/Scripts/angular-route.min.js"></script> 
-
-
+    <script src="~/Scripts/angular.js"></script>     
+    <script src="~/Scripts/angular-route.min.js"></script>
+    <script src="~/scripts/jquery-3.2.1.min.js"></script>  
+      
+    <script src="~/customscripts/Database.js"></script>
+    <script src="~/customscripts/DatabaseService.js"></script>
+    <script src="~/customscripts/AppCtrl.js"></script>  
 
     <link rel='stylesheet prefetch' href='https://cdn.gitcdn.link/cdn/angular/bower-material/v1.1.5/angular-material.css'>
     <link rel='stylesheet prefetch' href='https://material.angularjs.org/1.1.5/docs.css'>  
-    <script src='https://cdn.gitcdn.link/cdn/angular/bower-material/v1.1.5/angular-material.js'></script>
     <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:400,700'>
+    <script src='https://cdn.gitcdn.link/cdn/angular/bower-material/v1.1.5/angular-material.js'></script>
     
-    <!-- DevExtreme themes -->
     <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/17.1.7/css/dx.spa.css" />
     <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/17.1.7/css/dx.common.css" />
     <link rel="dx-theme" data-theme="generic.light" href="https://cdn3.devexpress.com/jslib/17.1.7/css/dx.light.css" />
     <script src="https://cdn3.devexpress.com/jslib/17.1.7/js/dx.all.js"></script>
-    <link rel="stylesheet" type="text/css" href="../node_modules/devextreme/dist/css/dx.common.css" />
-    <link rel="stylesheet" type="text/css" href="../node_modules/devextreme/dist/css/dx.light.css" />
-    <script type="text/javascript" src="../node_modules/devextreme/dist/js/dx.all.js"></script>
   </head>
   <body>
-    <header>
-
-        <div class="content-wrapper">
-            <div class="float-right">
-                <nav>
-                    <ul id="menu">
-                        <li>@Html.ActionLink("Startseite", "Index", "Home", new { area = "" }, null)</li>
-                        <li>@Html.ActionLink("API", "Index", "Help", new { area = "" }, null)</li>
-                    </ul>
-                </nav>
-            </div>
+    <div ng-controller="AppCtrl" layout="column" style="height: 100%;" ng-cloak="" class="sidenavdemoBasicUsage">
+      <div class="sidebar-overlay"></div>
+      <aside id="sidebar" class="sidebar sidebar-default open" role="navigation">
+        <div class="sidebar-header header-cover">
+            <div class="title">TestResult</div>
         </div>
-    </header>
-    @RenderBody()
+
+        <!-- Sidebar navigation -->
+        <ul class="nav sidebar-nav">
+          <li>@Html.ActionLink("Start", "Index", "Home", null,  null)</li>
+          <li>
+              <a href="/">Dashboard</a>
+          </li>
+          <li class="divider"></li>
+          <div ng-repeat="n in appareas">
+            <li>
+              <a href="{{ n.apparea | lowercase }}">{{ n.apparea }}
+                <div ng-show="{{ n.errorcount > 0 }}">
+                  <span class="sidebar-badge badge-circle">{{ n.errorcount }}</span>
+                </div>            
+              </a>
+            </li>
+          </div>
+        </ul>
+      </aside>
+
+      <div class="splitter"></div>
+      @RenderBody()
+    </div>
   </body>
 </html>
 
