@@ -1,0 +1,276 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="UnitTestLogModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityContainer Name="UnitTestLogModelStoreContainer">
+          <EntitySet Name="AppRun" EntityType="UnitTestLogModel.Store.AppRun" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="TestCaseRun" EntityType="UnitTestLogModel.Store.TestCaseRun" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="TestError" EntityType="UnitTestLogModel.Store.TestError" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="TestSuiteRun" EntityType="UnitTestLogModel.Store.TestSuiteRun" store:Type="Tables" Schema="dbo" />
+          <AssociationSet Name="FK__TestCaseR__Suite__3E1D39E1" Association="UnitTestLogModel.Store.FK__TestCaseR__Suite__3E1D39E1">
+            <End Role="TestSuiteRun" EntitySet="TestSuiteRun" />
+            <End Role="TestCaseRun" EntitySet="TestCaseRun" />
+          </AssociationSet>
+          <AssociationSet Name="FK__TestError__CaseR__40F9A68C" Association="UnitTestLogModel.Store.FK__TestError__CaseR__40F9A68C">
+            <End Role="TestCaseRun" EntitySet="TestCaseRun" />
+            <End Role="TestError" EntitySet="TestError" />
+          </AssociationSet>
+          <AssociationSet Name="FK__TestSuite__AppRu__3B40CD36" Association="UnitTestLogModel.Store.FK__TestSuite__AppRu__3B40CD36">
+            <End Role="AppRun" EntitySet="AppRun" />
+            <End Role="TestSuiteRun" EntitySet="TestSuiteRun" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="AppRun">
+          <Key>
+            <PropertyRef Name="AppRunId" />
+          </Key>
+          <Property Name="AppRunId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="AppArea" Type="varchar(max)" Nullable="false" />
+          <Property Name="BuildDate" Type="datetime" Nullable="false" />
+          <Property Name="ServerName" Type="varchar(max)" Nullable="false" />
+          <Property Name="StartTime" Type="datetime" Nullable="false" />
+          <Property Name="EndTime" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TestCaseRun">
+          <Key>
+            <PropertyRef Name="CaseRunId" />
+          </Key>
+          <Property Name="CaseRunId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="SuiteRunId" Type="int" />
+          <Property Name="Name" Type="varchar(max)" Nullable="false" />
+          <Property Name="Duration" Type="float" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TestError">
+          <Key>
+            <PropertyRef Name="ErrorId" />
+          </Key>
+          <Property Name="ErrorId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="CaseRunId" Type="int" />
+          <Property Name="Message" Type="varchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TestSuiteRun">
+          <Key>
+            <PropertyRef Name="SuiteRunId" />
+          </Key>
+          <Property Name="SuiteRunId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="AppRunId" Type="int" />
+          <Property Name="Name" Type="varchar(max)" Nullable="false" />
+          <Property Name="Alias" Type="varchar(max)" Nullable="false" />
+          <Property Name="DbType" Type="varchar(max)" Nullable="false" />
+          <Property Name="Duration" Type="float" Nullable="false" />
+        </EntityType>
+        <Association Name="FK__TestCaseR__Suite__3E1D39E1">
+          <End Role="TestSuiteRun" Type="UnitTestLogModel.Store.TestSuiteRun" Multiplicity="0..1" />
+          <End Role="TestCaseRun" Type="UnitTestLogModel.Store.TestCaseRun" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TestSuiteRun">
+              <PropertyRef Name="SuiteRunId" />
+            </Principal>
+            <Dependent Role="TestCaseRun">
+              <PropertyRef Name="SuiteRunId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__TestError__CaseR__40F9A68C">
+          <End Role="TestCaseRun" Type="UnitTestLogModel.Store.TestCaseRun" Multiplicity="0..1" />
+          <End Role="TestError" Type="UnitTestLogModel.Store.TestError" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TestCaseRun">
+              <PropertyRef Name="CaseRunId" />
+            </Principal>
+            <Dependent Role="TestError">
+              <PropertyRef Name="CaseRunId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__TestSuite__AppRu__3B40CD36">
+          <End Role="AppRun" Type="UnitTestLogModel.Store.AppRun" Multiplicity="0..1" />
+          <End Role="TestSuiteRun" Type="UnitTestLogModel.Store.TestSuiteRun" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AppRun">
+              <PropertyRef Name="AppRunId" />
+            </Principal>
+            <Dependent Role="TestSuiteRun">
+              <PropertyRef Name="AppRunId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="UnitTestLogModel" Alias="Self" p1:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:p1="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="UnitTestLogEntities" p1:LazyLoadingEnabled="true">
+          <EntitySet Name="AppRuns" EntityType="UnitTestLogModel.AppRun" />
+          <EntitySet Name="TestCaseRuns" EntityType="UnitTestLogModel.TestCaseRun" />
+          <EntitySet Name="TestErrors" EntityType="UnitTestLogModel.TestError" />
+          <EntitySet Name="TestSuiteRuns" EntityType="UnitTestLogModel.TestSuiteRun" />
+          <AssociationSet Name="FK__TestSuite__AppRu__3B40CD36" Association="UnitTestLogModel.FK__TestSuite__AppRu__3B40CD36">
+            <End Role="AppRun" EntitySet="AppRuns" />
+            <End Role="TestSuiteRun" EntitySet="TestSuiteRuns" />
+          </AssociationSet>
+          <AssociationSet Name="FK__TestCaseR__Suite__3E1D39E1" Association="UnitTestLogModel.FK__TestCaseR__Suite__3E1D39E1">
+            <End Role="TestSuiteRun" EntitySet="TestSuiteRuns" />
+            <End Role="TestCaseRun" EntitySet="TestCaseRuns" />
+          </AssociationSet>
+          <AssociationSet Name="FK__TestError__CaseR__40F9A68C" Association="UnitTestLogModel.FK__TestError__CaseR__40F9A68C">
+            <End Role="TestCaseRun" EntitySet="TestCaseRuns" />
+            <End Role="TestError" EntitySet="TestErrors" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="AppRun">
+          <Key>
+            <PropertyRef Name="AppRunId" />
+          </Key>
+          <Property Name="AppRunId" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Name="AppArea" Type="String" Nullable="false" MaxLength="Max" Unicode="false" FixedLength="false" />
+          <Property Name="BuildDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ServerName" Type="String" Nullable="false" MaxLength="Max" Unicode="false" FixedLength="false" />
+          <Property Name="StartTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndTime" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="TestSuiteRuns" Relationship="UnitTestLogModel.FK__TestSuite__AppRu__3B40CD36" FromRole="AppRun" ToRole="TestSuiteRun" />
+        </EntityType>
+        <EntityType Name="TestCaseRun">
+          <Key>
+            <PropertyRef Name="CaseRunId" />
+          </Key>
+          <Property Name="CaseRunId" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Name="SuiteRunId" Type="Int32" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="Max" Unicode="false" FixedLength="false" />
+          <Property Name="Duration" Type="Double" Nullable="false" />
+          <NavigationProperty Name="TestSuiteRun" Relationship="UnitTestLogModel.FK__TestCaseR__Suite__3E1D39E1" FromRole="TestCaseRun" ToRole="TestSuiteRun" a:GetterAccess="Internal" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" a:SetterAccess="Internal" />
+          <NavigationProperty Name="TestErrors" Relationship="UnitTestLogModel.FK__TestError__CaseR__40F9A68C" FromRole="TestCaseRun" ToRole="TestError" />
+        </EntityType>
+        <EntityType Name="TestError">
+          <Key>
+            <PropertyRef Name="ErrorId" />
+          </Key>
+          <Property Name="ErrorId" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Name="CaseRunId" Type="Int32" />
+          <Property Name="Message" Type="String" Nullable="false" MaxLength="Max" Unicode="false" FixedLength="false" />
+          <NavigationProperty Name="TestCaseRun" Relationship="UnitTestLogModel.FK__TestError__CaseR__40F9A68C" FromRole="TestError" ToRole="TestCaseRun" a:GetterAccess="Internal" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" a:SetterAccess="Internal" />
+        </EntityType>
+        <EntityType Name="TestSuiteRun">
+          <Key>
+            <PropertyRef Name="SuiteRunId" />
+          </Key>
+          <Property Name="SuiteRunId" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Name="AppRunId" Type="Int32" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="Max" Unicode="false" FixedLength="false" />
+          <Property Name="Alias" Type="String" Nullable="false" MaxLength="Max" Unicode="false" FixedLength="false" />
+          <Property Name="DbType" Type="String" Nullable="false" MaxLength="Max" Unicode="false" FixedLength="false" />
+          <Property Name="Duration" Type="Double" Nullable="false" />
+          <NavigationProperty Name="AppRun" Relationship="UnitTestLogModel.FK__TestSuite__AppRu__3B40CD36" FromRole="TestSuiteRun" ToRole="AppRun" a:GetterAccess="Internal" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" a:SetterAccess="Internal" />
+          <NavigationProperty Name="TestCaseRuns" Relationship="UnitTestLogModel.FK__TestCaseR__Suite__3E1D39E1" FromRole="TestSuiteRun" ToRole="TestCaseRun" />
+        </EntityType>
+        <Association Name="FK__TestSuite__AppRu__3B40CD36">
+          <End Role="AppRun" Type="UnitTestLogModel.AppRun" Multiplicity="0..1" />
+          <End Role="TestSuiteRun" Type="UnitTestLogModel.TestSuiteRun" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AppRun">
+              <PropertyRef Name="AppRunId" />
+            </Principal>
+            <Dependent Role="TestSuiteRun">
+              <PropertyRef Name="AppRunId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__TestCaseR__Suite__3E1D39E1">
+          <End Role="TestSuiteRun" Type="UnitTestLogModel.TestSuiteRun" Multiplicity="0..1" />
+          <End Role="TestCaseRun" Type="UnitTestLogModel.TestCaseRun" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TestSuiteRun">
+              <PropertyRef Name="SuiteRunId" />
+            </Principal>
+            <Dependent Role="TestCaseRun">
+              <PropertyRef Name="SuiteRunId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__TestError__CaseR__40F9A68C">
+          <End Role="TestCaseRun" Type="UnitTestLogModel.TestCaseRun" Multiplicity="0..1" />
+          <End Role="TestError" Type="UnitTestLogModel.TestError" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TestCaseRun">
+              <PropertyRef Name="CaseRunId" />
+            </Principal>
+            <Dependent Role="TestError">
+              <PropertyRef Name="CaseRunId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="UnitTestLogModelStoreContainer" CdmEntityContainer="UnitTestLogEntities">
+          <EntitySetMapping Name="AppRuns">
+            <EntityTypeMapping TypeName="UnitTestLogModel.AppRun">
+              <MappingFragment StoreEntitySet="AppRun">
+                <ScalarProperty Name="AppRunId" ColumnName="AppRunId" />
+                <ScalarProperty Name="AppArea" ColumnName="AppArea" />
+                <ScalarProperty Name="BuildDate" ColumnName="BuildDate" />
+                <ScalarProperty Name="ServerName" ColumnName="ServerName" />
+                <ScalarProperty Name="StartTime" ColumnName="StartTime" />
+                <ScalarProperty Name="EndTime" ColumnName="EndTime" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TestCaseRuns">
+            <EntityTypeMapping TypeName="UnitTestLogModel.TestCaseRun">
+              <MappingFragment StoreEntitySet="TestCaseRun">
+                <ScalarProperty Name="CaseRunId" ColumnName="CaseRunId" />
+                <ScalarProperty Name="SuiteRunId" ColumnName="SuiteRunId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Duration" ColumnName="Duration" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TestErrors">
+            <EntityTypeMapping TypeName="UnitTestLogModel.TestError">
+              <MappingFragment StoreEntitySet="TestError">
+                <ScalarProperty Name="ErrorId" ColumnName="ErrorId" />
+                <ScalarProperty Name="CaseRunId" ColumnName="CaseRunId" />
+                <ScalarProperty Name="Message" ColumnName="Message" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TestSuiteRuns">
+            <EntityTypeMapping TypeName="UnitTestLogModel.TestSuiteRun">
+              <MappingFragment StoreEntitySet="TestSuiteRun">
+                <ScalarProperty Name="SuiteRunId" ColumnName="SuiteRunId" />
+                <ScalarProperty Name="AppRunId" ColumnName="AppRunId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Alias" ColumnName="Alias" />
+                <ScalarProperty Name="DbType" ColumnName="DbType" />
+                <ScalarProperty Name="Duration" ColumnName="Duration" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="False" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Kein" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

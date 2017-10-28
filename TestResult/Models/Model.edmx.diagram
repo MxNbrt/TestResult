@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="4c8702ef4fb04eab9f33902f979e3982" Name="Diagramm1">
+        <EntityTypeShape EntityType="UnitTestLogModel.AppRun" Width="1.5" PointX="0.75" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="UnitTestLogModel.TestCaseRun" Width="1.5" PointX="5.25" PointY="1.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="UnitTestLogModel.TestError" Width="1.5" PointX="7.5" PointY="1.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="UnitTestLogModel.TestSuiteRun" Width="1.5" PointX="3" PointY="1" IsExpanded="true" />
+        <AssociationConnector Association="UnitTestLogModel.FK__TestSuite__AppRu__3B40CD36" ManuallyRouted="false" />
+        <AssociationConnector Association="UnitTestLogModel.FK__TestCaseR__Suite__3E1D39E1" ManuallyRouted="false" />
+        <AssociationConnector Association="UnitTestLogModel.FK__TestError__CaseR__40F9A68C" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
