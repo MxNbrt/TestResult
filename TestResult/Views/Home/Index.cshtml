@@ -1,22 +1,8 @@
-﻿@{  ViewBag.Title = "Welcome";  }  
+﻿@{  ViewBag.Title = "Dashboard";  }  
   
 <body>  
     <div id="tblSubs" ng-controller="DatabaseCtrl">  
-        <table>  
-            <tr>  
-                <th>AppArea</th>  
-                <th>ServerName</th>   
-            </tr>  
-            <tr>  
-                <td>1</td>  
-                <td>2</td>  
-            </tr>  
-            <tbody data-ng-repeat="sub in appruns">  
-                <tr>  
-                    <td>{{sub.AppArea}}</td>  
-                    <td>{{sub.ServerName}}</td>  
-                </tr>  
-            </tbody>  
-        </table>  
+          <div id="gridContainer" dx-data-grid="dataGridOptions"></div>
+        <div data-bind="dxDataGrid: grid"></div>
     </div>  
 </body>

@@ -1,36 +1,82 @@
 ﻿angular.module('TestResultApp', [
-  'ngRoute',
-  'DatabaseService',
-  'Database'
+   'ngRoute',
+   'DatabaseService',
+   'DatabaseCtrl',
+   'dx'
 ])
 
-.controller('AppCtrl', function ($scope) {
-    $scope.appareas = [
-      { apparea: 'BsGui', errorcount: 2 },
-      { apparea: 'As', errorcount: 0 },
-      { apparea: 'Cp', errorcount: 0 },
-      { apparea: 'Ds', errorcount: 1 },
-      { apparea: 'Fs', errorcount: 0 },
-      { apparea: 'FsEba', errorcount: 1 },
-    ];
-})
-/*
-.config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
-    $routeProvider
-    .when('/', {
-        templateUrl: 'latest/latest.html',
-        controller: 'LatestCtrl'
-    })
-    .when('/:apparea', {
-        templateUrl: 'apparea/apparea.html',
-        controller: 'AppAreaCtrl'
-    })
-    .otherwise({
-        redirectTo: '/'
-    });;
+.controller('AppCtrl', function ($scope, DatabaseService) {
+    var servCall = DatabaseService.get('api/Database/AppRuns');
+    servCall.then(function (d) {
+        $scope.appareas = d;
+        $scope.dataGridOptions = {
+            dataSource: d,
+            columnChooser: {
+                enabled: true
+            },
+            grouping: {
+                contextMenuEnabled: true
+            },
+            groupPanel: {
+                visible: true,
+                allowColumnDragging: true
+            },
+            columnAutoWidth: true,
+            onRowPrepared: function (info) {
+                if (info.rowType !== 'data')
+                    return;
 
-    // use the HTML5 History API
-    $locationProvider.html5Mode(true);
-}])
-*/
-;
+                var difference = new Date(new Date(info.data.StartTime) - new Date(info.data.BuildTime));
+                if (difference.getDate > 1)
+                    info.rowElement.css('background', 'yellow');
+
+                if (info.data.FailedCaseCount > 0)
+                    info.rowElement.css('background', '#ffcccc');
+            },
+            columns: [
+            {
+                dataField: 'AppRunId',
+                visible: false
+            },
+            {
+                caption: 'AppArea',
+                dataField: 'AppArea'
+            },
+            {
+                caption: 'Builddatum',
+                dataType: 'date',
+                dataField: 'BuildDate',
+                format: 'dd.MM.yyyy'
+            },
+            {
+                caption: 'Testdatum',
+                dataType: 'date',
+                dataField: 'StartTime',
+                format: 'dd.MM.yyyy'
+            },
+            {
+                caption: 'Laufzeit',
+                calculateCellValue: function (data) {
+                    var difference = new Date(new Date(data.EndTime) - new Date(data.StartTime));
+                    var min = difference.getMinutes();
+                    var sec = difference.getSeconds();
+                    return (difference.getHours() - 1) + ':' + (min < 10 ? '0' : '') + min + ':' + (sec < 10 ? '0' : '') + sec;
+                }
+            },
+            {
+                caption: 'Anzahl Suites',
+                dataField: 'SuiteCount'
+            },
+            {
+                caption: 'Anzahl Cases',
+                dataField: 'CaseCount'
+            },
+            {
+                caption: 'Anzahl Fehler',
+                dataField: 'FailedCaseCount'
+            }]
+        };
+    }, function (error) {
+        console.log('Fehler beim Abrufen der Daten.')
+    });
+});

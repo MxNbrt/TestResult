@@ -1,8 +1,7 @@
 ﻿angular.module("DatabaseService", [])
 
 .service("DatabaseService", function ($http) {
-    this.getSubs = function () {
-        var url = 'api/Database/AppRuns';
+    this.get = function (url) {
         return $http.get(url).then(function (response) {
             return response.data;
         });

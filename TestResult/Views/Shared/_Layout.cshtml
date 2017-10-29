@@ -7,30 +7,31 @@
     <meta name="viewport" content="width=device-width" />
     <title>@ViewBag.Title</title>
 
-    @Styles.Render("~/Content/css")
+    <!-- scripts -->
     @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/jquery")
-
     <script src="~/Scripts/angular.js"></script>     
     <script src="~/Scripts/angular-route.min.js"></script>
     <script src="~/scripts/jquery-3.2.1.min.js"></script>  
+    <script src="~/scripts/dx.web.js"></script>  
       
-    <script src="~/customscripts/Database.js"></script>
+    <!-- my own scripts -->
+    <script src="~/customscripts/DatabaseCtrl.js"></script>
     <script src="~/customscripts/DatabaseService.js"></script>
     <script src="~/customscripts/AppCtrl.js"></script>  
+      
+    <!-- stylesheets -->
+    @Styles.Render("~/Content/css")
+    <link rel="stylesheet" type="text/css" href="~/Content/dx.spa.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/dx.common.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/dx.light.css" />
 
     <link rel='stylesheet prefetch' href='https://cdn.gitcdn.link/cdn/angular/bower-material/v1.1.5/angular-material.css'>
-    <link rel='stylesheet prefetch' href='https://material.angularjs.org/1.1.5/docs.css'>  
     <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:400,700'>
     <script src='https://cdn.gitcdn.link/cdn/angular/bower-material/v1.1.5/angular-material.js'></script>
-    
-    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/17.1.7/css/dx.spa.css" />
-    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/17.1.7/css/dx.common.css" />
-    <link rel="dx-theme" data-theme="generic.light" href="https://cdn3.devexpress.com/jslib/17.1.7/css/dx.light.css" />
-    <script src="https://cdn3.devexpress.com/jslib/17.1.7/js/dx.all.js"></script>
   </head>
   <body>
-    <div ng-controller="AppCtrl" layout="column" style="height: 100%;" ng-cloak="" class="sidenavdemoBasicUsage">
+    <div ng-controller="AppCtrl" layout="column" style="height: 100%;">
       <div class="sidebar-overlay"></div>
       <aside id="sidebar" class="sidebar sidebar-default open" role="navigation">
         <div class="sidebar-header header-cover">
@@ -39,16 +40,18 @@
 
         <!-- Sidebar navigation -->
         <ul class="nav sidebar-nav">
+          <!--
           <li>@Html.ActionLink("Start", "Index", "Home", null,  null)</li>
+          -->
           <li>
               <a href="/">Dashboard</a>
           </li>
           <li class="divider"></li>
-          <div ng-repeat="n in appareas">
+          <div ng-repeat="area in appareas">
             <li>
-              <a href="{{ n.apparea | lowercase }}">{{ n.apparea }}
-                <div ng-show="{{ n.errorcount > 0 }}">
-                  <span class="sidebar-badge badge-circle">{{ n.errorcount }}</span>
+              <a href="{{ area.AppArea | lowercase }}">{{ area.AppArea }}
+                <div ng-show="{{ area.FailedCaseCount > 0 }}">
+                  <span class="sidebar-badge badge-circle">{{ area.FailedCaseCount }}</span>
                 </div>            
               </a>
             </li>
@@ -56,8 +59,15 @@
         </ul>
       </aside>
 
+      <!-- separate menu and content -->
       <div class="splitter"></div>
-      @RenderBody()
+
+      <!-- actual content -->
+      <div class="wrapper">
+        <div class="constructor">
+            @RenderBody()
+        </div>
+      </div>
     </div>
   </body>
 </html>
