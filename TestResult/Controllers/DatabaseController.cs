@@ -34,7 +34,7 @@ namespace TestResult.Controllers
                 "from ( " +
                 "SELECT MAX(StartTime) OVER (partition by AppArea, ServerName) MaxStartTime, * " +
                 "from AppRun) r where StartTime = MaxStartTime";
-            return ToJson(ExecuteQuery(sqlQuery));
+            return ExecuteQuery(sqlQuery);
         }
 
         public HttpResponseMessage GetAppArea(string id)
@@ -51,14 +51,18 @@ namespace TestResult.Controllers
                 ")) as FailedCaseCount " +
                 "from dbo.AppRun r where lower(AppArea) = '" + id.ToLower() + "'";
 
-            return ToJson(ExecuteQuery(sqlQuery));
+            return ExecuteQuery(sqlQuery);
         }
 
-        protected HttpResponseMessage ToJson(dynamic obj)
+        public HttpResponseMessage GetRunErrors(string id)
         {
-            var response = Request.CreateResponse(HttpStatusCode.OK);
-            response.Content = new StringContent(JsonConvert.SerializeObject(obj), Encoding.UTF8, "application/json");
-            return response;
+            string sqlQuery =
+                "select s.Name, c.Name, c.Duration, e.Message from TestSuiteRun s " +
+                "join TestCaseRun c on s.SuiteRunId = c.SuiteRunId " +
+                "join TestError e on e.CaseRunId = c.CaseRunId " +
+                "where AppRunId = '" + id + "'";
+
+            return ExecuteQuery(sqlQuery);
         }
 
         /// <summary>
@@ -66,7 +70,7 @@ namespace TestResult.Controllers
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
-        public DataTable ExecuteQuery(string query)
+        public HttpResponseMessage ExecuteQuery(string query)
         {
             DataTable dt = new DataTable();
             DbConnection conn = context.Database.Connection;
@@ -89,7 +93,10 @@ namespace TestResult.Controllers
                 if (conn.State != ConnectionState.Closed)
                     conn.Close();
             }
-            return dt;
+
+            var response = Request.CreateResponse(HttpStatusCode.OK);
+            response.Content = new StringContent(JsonConvert.SerializeObject(dt), Encoding.UTF8, "application/json");
+            return response;
         }
     }
 }

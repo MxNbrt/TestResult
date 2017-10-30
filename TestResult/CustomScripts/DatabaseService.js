@@ -14,4 +14,8 @@
     this.GetAppArea = function (area) {
         return this.executeQuery('/api/Database/GetAppArea/' + area);
     }
+
+    this.GetRunErrors = function (runid) {
+        return this.executeQuery('/api/Database/GetRunErrors/' + runid);
+    }
 })

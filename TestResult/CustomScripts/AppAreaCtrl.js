@@ -32,6 +32,9 @@
                     if (info.data.FailedCaseCount > 0)
                         info.rowElement.css('background', '#ffcccc');
                 },
+                paging: {
+                    pageSize: 18
+                },
                 columns: [
                 {
                     dataField: 'AppRunId',
@@ -52,7 +55,9 @@
                     caption: 'Testdatum',
                     dataType: 'date',
                     dataField: 'StartTime',
-                    format: 'dd.MM.yyyy'
+                    format: 'dd.MM.yyyy',
+                    sortOrder: 'desc',
+                    sortIndex: 0
                 },
                 {
                     caption: 'Laufzeit',
@@ -61,7 +66,8 @@
                         var min = difference.getMinutes();
                         var sec = difference.getSeconds();
                         return (difference.getHours() - 1) + ':' + (min < 10 ? '0' : '') + min + ':' + (sec < 10 ? '0' : '') + sec;
-                    }
+                    },
+                    allowSorting: true
                 },
                 {
                     caption: 'Anzahl Suites',
@@ -77,7 +83,7 @@
                 }]
             };
         }, function (error) {
-            console.log('Fehler beim Abrufen der Daten: ' + error.status + ' ' + error.statusText + ' - ' + error.data.Message)
+            console.log(error.status + ' ' + error.statusText + ' - ' + error.data.Message)
         });
     };
 });

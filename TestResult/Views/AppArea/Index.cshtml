@@ -1,9 +1,7 @@
 ﻿@{
-    ViewBag.Title = ViewBag.Id;
+    ViewBag.Title = "AppArea " + ViewBag.Id;
 }
 
 <div ng-controller="AppAreaCtrl">
-    <h2>AppArea @Html.Raw(ViewBag.Id) </h2>
-    <br />
-    <div id="gridContainer" dx-data-grid="gridCurrentAppArea"></div>
+    <div dx-data-grid="gridCurrentAppArea"></div>
 </div>

@@ -6,6 +6,28 @@
 ])
 
 .controller('DashboardCtrl', function ($scope, DatabaseService) {
+
+    $scope.gridSelectedAppArea = {
+        noDataText: 'Bitte wählen Sie einen Test mit Fehlern aus',
+        dataSource: null
+    };
+
+    var selChanged = function (selectedItems) {
+        var data = selectedItems.selectedRowsData[0];
+        if (!data)
+            return;
+
+        var servCall2 = DatabaseService.GetRunErrors(data.AppRunId);
+        servCall2.then(function (i) {
+
+            var dataGrid = $('#gridContainer').dxDataGrid('instance');
+            dataGrid.option('dataSource', i);
+            dataGrid.repaint();
+        }, function (error) {
+            console.log(error.status + ' ' + error.statusText + ' - ' + error.data.Message)
+        });
+    };
+
     var servCall = DatabaseService.GetLatest();
     servCall.then(function (d) {
         $scope.appareas = d;
@@ -17,6 +39,11 @@
             grouping: {
                 contextMenuEnabled: true
             },
+            onSelectionChanged: selChanged,
+            selection: {
+                mode: "single"
+            },
+            hoverStateEnabled: true,
             groupPanel: {
                 visible: true,
                 allowColumnDragging: true
@@ -52,13 +79,17 @@
                 caption: 'Testdatum',
                 dataType: 'date',
                 dataField: 'StartTime',
-                format: 'dd.MM.yyyy'
+                format: 'dd.MM.yyyy',
+                sortOrder: 'desc',
+                sortIndex: 0
             },
             {
                 caption: 'Testzeit',
                 dataType: 'date',
                 dataField: 'StartTime',
-                format: 'HH:mm:ss'
+                format: 'HH:mm:ss',
+                sortOrder: 'desc',
+                sortIndex: 1
             },
             {
                 caption: 'Laufzeit',
@@ -67,7 +98,8 @@
                     var min = difference.getMinutes();
                     var sec = difference.getSeconds();
                     return (difference.getHours() - 1) + ':' + (min < 10 ? '0' : '') + min + ':' + (sec < 10 ? '0' : '') + sec;
-                }
+                },
+                allowSorting: true
             },
             {
                 caption: 'Anzahl Suites',
@@ -83,6 +115,6 @@
             }]
         };
     }, function (error) {
-        console.log('Fehler beim Abrufen der Daten.')
+        console.log(error.status + ' ' + error.statusText + ' - ' + error.data.Message)
     });
 });
