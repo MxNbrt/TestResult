@@ -12,19 +12,14 @@ using TestResult.Models;
 
 namespace TestResult.Controllers
 {
-    public class AppRunExtension : AppRun
-    {
-        public string SuiteCount;
-        public string CaseCount;
-        public string FailedCaseCount;
-    }
-
     public class DatabaseController : ApiController
     {
-        // GET: api/AppRuns
         private UnitTestLogEntities context = new UnitTestLogEntities();
-        public HttpResponseMessage Get()
+
+        public HttpResponseMessage GetLatest()
         {
+            new FileSystemController().checkDirectories();
+
             string sqlQuery =
                 "select AppRunId, AppArea, BuildDate, ServerName, StartTime, EndTime, " +
                 "(select count(*) from TestSuiteRun s where s.AppRunId = r.AppRunId) as SuiteCount, " +
@@ -39,6 +34,23 @@ namespace TestResult.Controllers
                 "from ( " +
                 "SELECT MAX(StartTime) OVER (partition by AppArea, ServerName) MaxStartTime, * " +
                 "from AppRun) r where StartTime = MaxStartTime";
+            return ToJson(ExecuteQuery(sqlQuery));
+        }
+
+        public HttpResponseMessage GetAppArea(string id)
+        {
+            string sqlQuery =
+                "select AppRunId, AppArea, BuildDate, ServerName, StartTime, EndTime, " +
+                "(select count(*) from TestSuiteRun s where s.AppRunId = r.AppRunId) as SuiteCount, " +
+                "(select count(*) from TestCaseRun c where c.SuiteRunId in  " +
+                "    (select SuiteRunId from TestSuiteRun s where s.AppRunId = r.AppRunId) " +
+                ") as CaseCount, " +
+                "(select count(distinct(e.CaseRunId)) from TestError e where e.CaseRunId in " +
+                "(select CaseRunId from TestCaseRun c where c.SuiteRunId in  " +
+                "    (select SuiteRunId from TestSuiteRun s where s.AppRunId = r.AppRunId) " +
+                ")) as FailedCaseCount " +
+                "from dbo.AppRun r where lower(AppArea) = '" + id.ToLower() + "'";
+
             return ToJson(ExecuteQuery(sqlQuery));
         }
 

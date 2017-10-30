@@ -6,10 +6,11 @@ using System.Web.Mvc;
 
 namespace TestResult.Controllers
 {
-    public class HomeController : Controller
+    public class AppAreaController : Controller
     {
-        public ActionResult Index()
+        public ActionResult Index(string id)
         {
+            ViewBag.Id = id;
             return View();
         }
     }

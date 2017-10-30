@@ -16,9 +16,9 @@
     <script src="~/scripts/dx.web.js"></script>  
       
     <!-- my own scripts -->
-    <script src="~/customscripts/DatabaseCtrl.js"></script>
     <script src="~/customscripts/DatabaseService.js"></script>
-    <script src="~/customscripts/AppCtrl.js"></script>  
+    <script src="~/customscripts/AppAreaCtrl.js"></script>  
+    <script src="~/customscripts/DashboardCtrl.js"></script>  
       
     <!-- stylesheets -->
     @Styles.Render("~/Content/css")
@@ -31,7 +31,7 @@
     <script src='https://cdn.gitcdn.link/cdn/angular/bower-material/v1.1.5/angular-material.js'></script>
   </head>
   <body>
-    <div ng-controller="AppCtrl" layout="column" style="height: 100%;">
+    <div ng-controller="DashboardCtrl" layout="column" style="height: 100%;">
       <div class="sidebar-overlay"></div>
       <aside id="sidebar" class="sidebar sidebar-default open" role="navigation">
         <div class="sidebar-header header-cover">
@@ -49,7 +49,7 @@
           <li class="divider"></li>
           <div ng-repeat="area in appareas">
             <li>
-              <a href="{{ area.AppArea | lowercase }}">{{ area.AppArea }}
+              <a href="/apparea/{{ area.AppArea | lowercase }}">{{ area.AppArea }}
                 <div ng-show="{{ area.FailedCaseCount > 0 }}">
                   <span class="sidebar-badge badge-circle">{{ area.FailedCaseCount }}</span>
                 </div>            

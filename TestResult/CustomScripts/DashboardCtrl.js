@@ -1,15 +1,15 @@
 ﻿angular.module('TestResultApp', [
    'ngRoute',
    'DatabaseService',
-   'DatabaseCtrl',
+   'AppArea',
    'dx'
 ])
 
-.controller('AppCtrl', function ($scope, DatabaseService) {
-    var servCall = DatabaseService.get('api/Database/AppRuns');
+.controller('DashboardCtrl', function ($scope, DatabaseService) {
+    var servCall = DatabaseService.GetLatest();
     servCall.then(function (d) {
         $scope.appareas = d;
-        $scope.dataGridOptions = {
+        $scope.gridAllAppAreas = {
             dataSource: d,
             columnChooser: {
                 enabled: true
@@ -26,9 +26,9 @@
                 if (info.rowType !== 'data')
                     return;
 
-                var difference = new Date(new Date(info.data.StartTime) - new Date(info.data.BuildTime));
-                if (difference.getDate > 1)
-                    info.rowElement.css('background', 'yellow');
+                var difference = new Date(new Date(info.data.StartTime) - new Date(info.data.BuildDate));
+                if (difference.getDate() > 2)
+                    info.rowElement.css('background', '#ffff99');
 
                 if (info.data.FailedCaseCount > 0)
                     info.rowElement.css('background', '#ffcccc');
@@ -53,6 +53,12 @@
                 dataType: 'date',
                 dataField: 'StartTime',
                 format: 'dd.MM.yyyy'
+            },
+            {
+                caption: 'Testzeit',
+                dataType: 'date',
+                dataField: 'StartTime',
+                format: 'HH:mm:ss'
             },
             {
                 caption: 'Laufzeit',
