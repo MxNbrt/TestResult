@@ -119,10 +119,14 @@ namespace TestResult.Controllers
                         int strStart = line.IndexOf("[Dauer: ") + 8;
                         string duration = line.Substring(strStart, line.IndexOf("]") - strStart).Trim();
                         currentCase.Duration = ConvertDurationString(duration);
+                        currentErrorLine = currentErrorLine.Trim();
+                        currentErrorLine = currentErrorLine.Replace("#Testfall fehlgeschlagen: ", "");
+                        currentErrorLine = currentErrorLine.Replace("#Testfall fehlerhaft: ", "");
+
                         if (!String.IsNullOrWhiteSpace(currentErrorLine))
                         {
                             TestError err = new TestError();
-                            err.Message = currentErrorLine.Replace("#Testfall fehlgeschlagen: ", "");
+                            err.Message = currentErrorLine;
                             currentCase.TestErrors.Add(err);
                         }
                         currentErrorLine = "";

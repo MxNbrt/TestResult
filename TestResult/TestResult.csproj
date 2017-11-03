@@ -152,6 +152,7 @@
     <Compile Include="Controllers\DatabaseController.cs" />
     <Compile Include="Controllers\FileSystemController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\RunController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -249,8 +250,10 @@
     <Content Include="Content\themes\base\tabs.css" />
     <Content Include="Content\themes\base\theme.css" />
     <Content Include="Content\themes\base\tooltip.css" />
-    <Content Include="CustomScripts\DashboardCtrl.js" />
-    <Content Include="CustomScripts\DatabaseService.js" />
+    <Content Include="CustomScripts\HomeCtrl.js" />
+    <Content Include="CustomScripts\DatabaseSvc.js" />
+    <Content Include="CustomScripts\GridUtils.js" />
+    <Content Include="CustomScripts\RunCtrl.js" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Models\Model.Context.tt">
@@ -387,6 +390,7 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Scripts\version.json" />
     <Content Include="Views\AppArea\Index.cshtml" />
+    <Content Include="Views\Run\Index.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

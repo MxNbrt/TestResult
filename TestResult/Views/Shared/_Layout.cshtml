@@ -16,9 +16,11 @@
     <script src="~/scripts/dx.web.js"></script>  
       
     <!-- my own scripts -->
-    <script src="~/customscripts/DatabaseService.js"></script>
+    <script src="~/customscripts/DatabaseSvc.js"></script>
     <script src="~/customscripts/AppAreaCtrl.js"></script>  
-    <script src="~/customscripts/DashboardCtrl.js"></script>  
+    <script src="~/customscripts/RunCtrl.js"></script>  
+    <script src="~/customscripts/GridUtils.js"></script>  
+    <script src="~/customscripts/HomeCtrl.js"></script>  
       
     <!-- stylesheets -->
     @Styles.Render("~/Content/css")
@@ -31,7 +33,7 @@
     <script src='https://cdn.gitcdn.link/cdn/angular/bower-material/v1.1.5/angular-material.js'></script>
   </head>
   <body>
-    <div ng-controller="DashboardCtrl" layout="column" style="height: 100%;">
+    <div ng-controller="HomeCtrl" layout="column" style="height: 100%;">
       <div class="sidebar-overlay"></div>
       <aside id="sidebar" class="sidebar sidebar-default open" role="navigation">
         <div class="sidebar-header header-cover">
@@ -50,8 +52,8 @@
           <div ng-repeat="area in appareas">
             <li>
               <a href="/apparea/{{ area.AppArea | lowercase }}">{{ area.AppArea }}
-                <div ng-show="{{ area.FailedCaseCount > 0 }}">
-                  <span class="sidebar-badge badge-circle">{{ area.FailedCaseCount }}</span>
+                <div ng-show="{{ area.ErrorCount > 0 }}">
+                  <span class="sidebar-badge badge-circle">{{ area.ErrorCount }}</span>
                 </div>            
               </a>
             </li>

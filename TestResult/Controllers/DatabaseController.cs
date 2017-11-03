@@ -30,7 +30,7 @@ namespace TestResult.Controllers
                 "(select CaseRunId from TestCaseRun c where c.SuiteRunId in  " +
                 "    (select SuiteRunId from TestSuiteRun s where s.AppRunId = r.AppRunId) " +
                 ")) " +
-                "as FailedCaseCount " +
+                "as ErrorCount " +
                 "from ( " +
                 "SELECT MAX(StartTime) OVER (partition by AppArea, ServerName) MaxStartTime, * " +
                 "from AppRun) r where StartTime = MaxStartTime";
@@ -48,7 +48,7 @@ namespace TestResult.Controllers
                 "(select count(distinct(e.CaseRunId)) from TestError e where e.CaseRunId in " +
                 "(select CaseRunId from TestCaseRun c where c.SuiteRunId in  " +
                 "    (select SuiteRunId from TestSuiteRun s where s.AppRunId = r.AppRunId) " +
-                ")) as FailedCaseCount " +
+                ")) as ErrorCount " +
                 "from dbo.AppRun r where lower(AppArea) = '" + id.ToLower() + "'";
 
             return ExecuteQuery(sqlQuery);
@@ -57,7 +57,7 @@ namespace TestResult.Controllers
         public HttpResponseMessage GetRunErrors(string id)
         {
             string sqlQuery =
-                "select s.Name, c.Name, c.Duration, e.Message from TestSuiteRun s " +
+                "select s.Name as SuiteName, c.Name as CaseName, c.Duration, e.Message from TestSuiteRun s " +
                 "join TestCaseRun c on s.SuiteRunId = c.SuiteRunId " +
                 "join TestError e on e.CaseRunId = c.CaseRunId " +
                 "where AppRunId = '" + id + "'";
