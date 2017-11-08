@@ -21,7 +21,7 @@ namespace TestResult.Controllers
             new FileSystemController().checkDirectories();
 
             string sqlQuery =
-                "select AppRunId, AppArea, BuildDate, ServerName, StartTime, EndTime, " +
+                "select AppRunId, AppArea, BuildDate, ServerName, StartTime, EndTime, Alias, DbType, Version, " +
                 "(select count(*) from TestSuiteRun s where s.AppRunId = r.AppRunId) as SuiteCount, " +
                 "(select count(*) from TestCaseRun c where c.SuiteRunId in  " +
                 "    (select SuiteRunId from TestSuiteRun s where s.AppRunId = r.AppRunId) " +
@@ -32,7 +32,7 @@ namespace TestResult.Controllers
                 ")) " +
                 "as ErrorCount " +
                 "from ( " +
-                "SELECT MAX(StartTime) OVER (partition by AppArea, ServerName) MaxStartTime, * " +
+                "SELECT MAX(StartTime) OVER (partition by AppArea, DbType, Version) MaxStartTime, * " +
                 "from AppRun) r where StartTime = MaxStartTime";
             return ExecuteQuery(sqlQuery);
         }
@@ -42,7 +42,7 @@ namespace TestResult.Controllers
             new FileSystemController().checkDirectories();
 
             string sqlQuery =
-                "select AppRunId, AppArea, BuildDate, ServerName, StartTime, EndTime, " +
+                "select AppRunId, AppArea, BuildDate, ServerName, StartTime, EndTime, Alias, DbType, Version, " +
                 "(select count(*) from TestSuiteRun s where s.AppRunId = r.AppRunId) as SuiteCount, " +
                 "(select count(*) from TestCaseRun c where c.SuiteRunId in  " +
                 "    (select SuiteRunId from TestSuiteRun s where s.AppRunId = r.AppRunId) " +

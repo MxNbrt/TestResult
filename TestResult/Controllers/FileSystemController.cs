@@ -15,17 +15,22 @@ namespace TestResult.Controllers
         /// saves the given AppRun, which was read from a logfile, to the database
         /// </summary>
         /// <param name="appRun"></param>
-        private void SaveToDatabase(AppRun appRun)
+        private void SaveToDatabase(List<AppRun> appRuns)
         {
             UnitTestLogEntities context = new UnitTestLogEntities();
-            // dont save apprun in db if already exists
-            var runAlreadyInDb = from st in context.AppRuns where st.StartTime == appRun.StartTime select st;
+            foreach (AppRun appRun in appRuns)
+            {
+                // dont save apprun in db if already exists
+                // todo check for starttime, server, alias
+                var runAlreadyInDb = from st in context.AppRuns where st.StartTime == appRun.StartTime 
+                    && st.ServerName == appRun.ServerName && st.Alias == appRun.Alias select st;
 
-            // if test wasnt completed, no apparea is provided. Dont save this to db
-            if (runAlreadyInDb.Count() > 0 || String.IsNullOrWhiteSpace(appRun.AppArea))
-                return;
+                // if test wasnt completed, no apparea is provided. Dont save this to db
+                if (runAlreadyInDb.Count() > 0 || String.IsNullOrWhiteSpace(appRun.AppArea))
+                    return;
 
-            context.AppRuns.Add(appRun);
+                context.AppRuns.Add(appRun);
+            }
             context.SaveChanges();
         }
 
@@ -34,7 +39,7 @@ namespace TestResult.Controllers
         /// </summary>
         public void checkDirectories()
         {
-            String[] paths = new string[] { @"\\vmwrewetcdev\d$\CGM\CGM_REWE\Cobra\Test" };
+            String[] paths = new string[] { @"\\VMWREWETCDEV\Test$" };
             foreach (string path in paths)
             {
                 string cleanPath = path.EndsWith(@"\") ? path.Remove(path.Length - 1) : path;
@@ -100,10 +105,12 @@ namespace TestResult.Controllers
         private List<AppRun> ProcessFile(string filename)
         {
             List<AppRun> allRuns = new List<AppRun>();
-            AppRun currentRun = new AppRun();
+
+            AppRun dummyRun = new AppRun();
             TestSuiteRun currentSuite = new TestSuiteRun();
             TestCaseRun currentCase = new TestCaseRun();
             string currentErrorLine = "";
+            string currentSuiteError = "";
 
             foreach (string line in File.ReadAllLines(filename))
             {
@@ -133,6 +140,7 @@ namespace TestResult.Controllers
                         {
                             TestError err = new TestError();
                             err.Message = currentErrorLine;
+                            // TODO split multiple errors
                             currentCase.TestErrors.Add(err);
                         }
                         currentErrorLine = "";
@@ -151,9 +159,22 @@ namespace TestResult.Controllers
                         currentSuite = new TestSuiteRun();
                         int strStart = line.IndexOf(" gestartet mit Alias ");
                         currentSuite.Name = line.Substring(0, strStart).Trim();
-                        currentSuite.DbType = line.Substring(line.IndexOf("[") + 1, line.IndexOf("]") - line.IndexOf("[") - 1).Trim();
-                        currentSuite.Alias = line.Substring(strStart + 22, line.IndexOf("[") - strStart - 24).Trim();
-                        currentRun.TestSuiteRuns.Add(currentSuite);
+
+                        string dbType = line.Substring(line.IndexOf("[") + 1, line.IndexOf("]") - line.IndexOf("[") - 1).Trim();
+                        string alias = line.Substring(strStart + 22, line.IndexOf("[") - strStart - 24).Trim();
+                        currentSuiteError = "";
+
+                        List<AppRun> run = allRuns.Where(x => (x.Alias == alias && x.DbType == dbType)).ToList();
+                        if (run.Count > 0)
+                            run[0].TestSuiteRuns.Add(currentSuite);
+                        else
+                        {
+                            AppRun newRun = new AppRun();
+                            newRun.Alias = alias;
+                            newRun.DbType = dbType;
+                            allRuns.Add(newRun);
+                            newRun.TestSuiteRuns.Add(currentSuite);
+                        }
                     }
                     else if (line.Contains(" beendet [Dauer: "))
                     {
@@ -161,6 +182,37 @@ namespace TestResult.Controllers
                         //TC_BsGui_BusinessObjectMassInsertHelper_01 beendet [Dauer: 1,48 Sekunden]
                         string duration = line.Substring(strStart, line.IndexOf("]") - strStart).Trim();
                         currentSuite.Duration = ConvertDurationString(duration);
+
+                        if (!String.IsNullOrWhiteSpace(currentSuiteError))
+                        {
+                            TestCaseRun cr;
+                            if (currentSuite.TestCaseRuns.Count == 0)
+                            {
+                                cr = new TestCaseRun();
+                                if (currentSuiteError.Contains("TearDown"))
+                                    cr.Name = "TearDown";
+                                else
+                                    cr.Name = "SetUp";
+
+                                cr.Duration = currentSuite.Duration;
+                                currentSuite.TestCaseRuns.Add(cr);
+                            }
+                            else
+                            {
+                                cr = currentSuite.TestCaseRuns.First();
+                            }
+
+                            if (currentSuiteError.Contains("#Testfall fehlerhaft:"))
+                                currentSuiteError = currentSuiteError.Replace("#Testfall fehlerhaft:", "").Trim();
+
+                            TestError te = new TestError();
+                            te.Message = currentSuiteError;
+                            cr.TestErrors.Add(te);
+                        }
+                    }
+                    else
+                    {
+                        currentSuiteError = currentSuiteError + line.Trim() + " ";
                     }
                 }
                 // AppRun
@@ -169,20 +221,33 @@ namespace TestResult.Controllers
                     string appArea = line.Replace("Anwendung: ", "");
                     if (appArea.ToLower().Contains("unittest.exe"))
                         appArea = appArea.Remove(appArea.ToLower().IndexOf("unittest.exe"));
-                    currentRun.AppArea = appArea;
+                    dummyRun.AppArea = appArea;
                 }
 
                 else if (line.StartsWith("Builddatum: "))
-                    currentRun.BuildDate = Convert.ToDateTime(line.Replace("Builddatum: ", ""));
+                    dummyRun.BuildDate = Convert.ToDateTime(line.Replace("Builddatum: ", ""));
 
                 else if (line.StartsWith("Server: "))
-                    currentRun.ServerName = line.Replace("Server: ", "").ToLower();
+                    dummyRun.ServerName = line.Replace("Server: ", "").ToLower();
 
+                else if (line.StartsWith("Version: "))
+                    dummyRun.Version = line.Replace("Version: ", "").ToLower();
+                    
                 else if (line.StartsWith("Start: "))
-                    currentRun.StartTime = Convert.ToDateTime(line.Replace("Start: ", ""));
+                    dummyRun.StartTime = Convert.ToDateTime(line.Replace("Start: ", ""));
 
                 else if (line.StartsWith("Ende: "))
-                    currentRun.EndTime = Convert.ToDateTime(line.Replace("Ende: ", ""));
+                    dummyRun.EndTime = Convert.ToDateTime(line.Replace("Ende: ", ""));
+            }
+
+            foreach (AppRun r in allRuns)
+            {
+                r.AppArea = dummyRun.AppArea;
+                r.BuildDate = dummyRun.BuildDate;
+                r.ServerName = dummyRun.ServerName;
+                r.Version = dummyRun.Version != null ? dummyRun.Version : "5.5";
+                r.StartTime = dummyRun.StartTime;
+                r.EndTime = dummyRun.EndTime;
             }
 
             return allRuns;

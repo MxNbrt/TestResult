@@ -11,7 +11,7 @@
     var servCall = DatabaseSvc.GetLatest();
     servCall.then(function (data) {
         $scope.gridAllAppAreas = GetGridObject(data, false);
-        $scope.appareas = data;
+        $scope.menuAppAreas = data;
     }, function (error) {
         console.log(error.status + ' ' + error.statusText + ' - ' + error.data.Message)
     });

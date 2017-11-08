@@ -27,6 +27,7 @@ namespace TestResult.Models
         public System.DateTime EndTime { get; set; }
         public string Alias { get; set; }
         public string DbType { get; set; }
+        public string Version { get; set; }
     
         public virtual ICollection<TestSuiteRun> TestSuiteRuns { get; set; }
     }

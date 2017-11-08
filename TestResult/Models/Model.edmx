@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="UnitTestLogModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="UnitTestLogModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityContainer Name="UnitTestLogModelStoreContainer">
           <EntitySet Name="AppRun" EntityType="UnitTestLogModel.Store.AppRun" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="TestCaseRun" EntityType="UnitTestLogModel.Store.TestCaseRun" store:Type="Tables" Schema="dbo" />
@@ -35,6 +35,7 @@
           <Property Name="EndTime" Type="datetime" Nullable="false" />
           <Property Name="Alias" Type="varchar(max)" Nullable="false" />
           <Property Name="DbType" Type="varchar(max)" Nullable="false" />
+          <Property Name="Version" Type="varchar(max)" Nullable="false" />
         </EntityType>
         <EntityType Name="TestCaseRun">
           <Key>
@@ -98,8 +99,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="UnitTestLogModel" Alias="Self" p1:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:p1="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -134,6 +134,7 @@
           <Property Name="Alias" Type="String" Nullable="false" MaxLength="Max" Unicode="false" FixedLength="false" />
           <Property Name="DbType" Type="String" Nullable="false" MaxLength="Max" Unicode="false" FixedLength="false" />
           <NavigationProperty Name="TestSuiteRuns" Relationship="UnitTestLogModel.FK__TestSuite__AppRu__25869641" FromRole="AppRun" ToRole="TestSuiteRun" />
+          <Property Type="String" Name="Version" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="TestCaseRun">
           <Key>
@@ -211,6 +212,7 @@
           <EntitySetMapping Name="AppRuns">
             <EntityTypeMapping TypeName="UnitTestLogModel.AppRun">
               <MappingFragment StoreEntitySet="AppRun">
+                <ScalarProperty Name="Version" ColumnName="Version" />
                 <ScalarProperty Name="AppRunId" ColumnName="AppRunId" />
                 <ScalarProperty Name="AppArea" ColumnName="AppArea" />
                 <ScalarProperty Name="BuildDate" ColumnName="BuildDate" />

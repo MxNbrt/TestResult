@@ -49,14 +49,16 @@
               <a href="/">Dashboard</a>
           </li>
           <li class="divider"></li>
-          <div ng-repeat="area in appareas">
-            <li>
-              <a href="/apparea/{{ area.AppArea | lowercase }}">{{ area.AppArea }}
-                <div ng-show="{{ area.ErrorCount > 0 }}">
-                  <span class="sidebar-badge badge-circle">{{ area.ErrorCount }}</span>
-                </div>            
-              </a>
-            </li>
+          <div ng-repeat="menuItem in menuAppAreas">
+            <div ng-show="{{ menuItem.DbType === 'MSSQL' }}">
+                <li>
+                  <a href="/apparea/{{ menuItem.AppArea | lowercase }}">{{ menuItem.AppArea }}
+                    <div ng-show="{{ menuItem.ErrorCount > 0 }}">
+                      <span class="sidebar-badge badge-circle">{{ menuItem.ErrorCount }}</span>
+                    </div>            
+                  </a>
+                </li>
+            </div>
           </div>
         </ul>
       </aside>

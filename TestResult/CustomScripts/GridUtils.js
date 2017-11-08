@@ -26,7 +26,11 @@ function GetGridObject(data, isRunView) {
         grouping: {
             allowCollapsing: false
         },
+        groupPanel: {
+            visible: true
+        },
         showColumnHeaders: !isRunView,
+        columnAutoWidth: !isRunView,
         wordWrapEnabled: isRunView,
         onRowPrepared: function (info) {
             if (info.rowType !== 'data')
@@ -77,29 +81,21 @@ function GetGridObject(data, isRunView) {
             },
             {
                 caption: 'AppArea',
-                dataField: 'AppArea'
-            },
-            {
-                caption: 'Builddatum',
-                dataType: 'date',
-                dataField: 'BuildDate',
-                format: 'dd.MM.yyyy'
-            },
-            {
-                caption: 'Testdatum',
-                dataType: 'date',
-                dataField: 'StartTime',
-                format: 'dd.MM.yyyy',
-                sortOrder: 'desc',
+                dataField: 'AppArea',
+                sortOrder: 'asc',
                 sortIndex: 0
             },
             {
-                caption: 'Testzeit',
-                dataType: 'date',
-                dataField: 'StartTime',
-                format: 'HH:mm:ss',
-                sortOrder: 'desc',
-                sortIndex: 1
+                caption: 'Builddatum',
+                calculateCellValue: function (data) {
+                    return GetDateTimeString(new Date(data.BuildDate));
+                }
+            },
+            {
+                caption: 'Testdatum',
+                calculateCellValue: function (data) {
+                    return GetDateTimeString(new Date(data.StartTime));
+                }
             },
             {
                 caption: 'Laufzeit',
@@ -110,6 +106,21 @@ function GetGridObject(data, isRunView) {
                     return (difference.getHours() - 1) + ':' + (min < 10 ? '0' : '') + min + ':' + (sec < 10 ? '0' : '') + sec;
                 },
                 allowSorting: true
+            },
+            {
+                caption: 'Alias',
+                dataField: 'Alias',
+                visible: false
+            },
+            {
+                caption: 'Datenbank',
+                dataField: 'DbType',
+                visible: false
+            },
+            {
+                caption: 'Version',
+                dataField: 'Version',
+                visible: false
             },
             {
                 caption: 'Anzahl Suites',
@@ -123,7 +134,20 @@ function GetGridObject(data, isRunView) {
             {
                 caption: 'Anzahl Fehler',
                 dataField: 'ErrorCount'
+            },
+            {
+                caption: 'Version',
+                calculateCellValue: function (data) {
+                    return data.Version + ' Datenbank: ' + data.DbType;
+                },
+                groupIndex: 0,
+                sortOrder: 'asc'
             }
         ]
     };
+};
+
+function GetDateTimeString(date) {
+    return (date.getDate() < 10 ? '0' : '') + date.getDate() + '.' + (date.getMonth() < 10 ? '0' : '') + date.getMonth() + '.' + date.getFullYear() + ' ' +
+        (date.getHours() < 10 ? '0' : '') + date.getHours() + ':' + (date.getMinutes() < 10 ? '0' : '') + date.getMinutes();
 };
