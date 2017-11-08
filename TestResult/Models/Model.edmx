@@ -10,15 +10,15 @@
           <EntitySet Name="TestCaseRun" EntityType="UnitTestLogModel.Store.TestCaseRun" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="TestError" EntityType="UnitTestLogModel.Store.TestError" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="TestSuiteRun" EntityType="UnitTestLogModel.Store.TestSuiteRun" store:Type="Tables" Schema="dbo" />
-          <AssociationSet Name="FK__TestCaseR__Suite__3E1D39E1" Association="UnitTestLogModel.Store.FK__TestCaseR__Suite__3E1D39E1">
+          <AssociationSet Name="FK__TestCaseR__Suite__286302EC" Association="UnitTestLogModel.Store.FK__TestCaseR__Suite__286302EC">
             <End Role="TestSuiteRun" EntitySet="TestSuiteRun" />
             <End Role="TestCaseRun" EntitySet="TestCaseRun" />
           </AssociationSet>
-          <AssociationSet Name="FK__TestError__CaseR__40F9A68C" Association="UnitTestLogModel.Store.FK__TestError__CaseR__40F9A68C">
+          <AssociationSet Name="FK__TestError__CaseR__2B3F6F97" Association="UnitTestLogModel.Store.FK__TestError__CaseR__2B3F6F97">
             <End Role="TestCaseRun" EntitySet="TestCaseRun" />
             <End Role="TestError" EntitySet="TestError" />
           </AssociationSet>
-          <AssociationSet Name="FK__TestSuite__AppRu__3B40CD36" Association="UnitTestLogModel.Store.FK__TestSuite__AppRu__3B40CD36">
+          <AssociationSet Name="FK__TestSuite__AppRu__25869641" Association="UnitTestLogModel.Store.FK__TestSuite__AppRu__25869641">
             <End Role="AppRun" EntitySet="AppRun" />
             <End Role="TestSuiteRun" EntitySet="TestSuiteRun" />
           </AssociationSet>
@@ -33,6 +33,8 @@
           <Property Name="ServerName" Type="varchar(max)" Nullable="false" />
           <Property Name="StartTime" Type="datetime" Nullable="false" />
           <Property Name="EndTime" Type="datetime" Nullable="false" />
+          <Property Name="Alias" Type="varchar(max)" Nullable="false" />
+          <Property Name="DbType" Type="varchar(max)" Nullable="false" />
         </EntityType>
         <EntityType Name="TestCaseRun">
           <Key>
@@ -58,11 +60,9 @@
           <Property Name="SuiteRunId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="AppRunId" Type="int" />
           <Property Name="Name" Type="varchar(max)" Nullable="false" />
-          <Property Name="Alias" Type="varchar(max)" Nullable="false" />
-          <Property Name="DbType" Type="varchar(max)" Nullable="false" />
           <Property Name="Duration" Type="float" Nullable="false" />
         </EntityType>
-        <Association Name="FK__TestCaseR__Suite__3E1D39E1">
+        <Association Name="FK__TestCaseR__Suite__286302EC">
           <End Role="TestSuiteRun" Type="UnitTestLogModel.Store.TestSuiteRun" Multiplicity="0..1" />
           <End Role="TestCaseRun" Type="UnitTestLogModel.Store.TestCaseRun" Multiplicity="*" />
           <ReferentialConstraint>
@@ -74,7 +74,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__TestError__CaseR__40F9A68C">
+        <Association Name="FK__TestError__CaseR__2B3F6F97">
           <End Role="TestCaseRun" Type="UnitTestLogModel.Store.TestCaseRun" Multiplicity="0..1" />
           <End Role="TestError" Type="UnitTestLogModel.Store.TestError" Multiplicity="*" />
           <ReferentialConstraint>
@@ -86,7 +86,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__TestSuite__AppRu__3B40CD36">
+        <Association Name="FK__TestSuite__AppRu__25869641">
           <End Role="AppRun" Type="UnitTestLogModel.Store.AppRun" Multiplicity="0..1" />
           <End Role="TestSuiteRun" Type="UnitTestLogModel.Store.TestSuiteRun" Multiplicity="*" />
           <ReferentialConstraint>
@@ -108,15 +108,15 @@
           <EntitySet Name="TestCaseRuns" EntityType="UnitTestLogModel.TestCaseRun" />
           <EntitySet Name="TestErrors" EntityType="UnitTestLogModel.TestError" />
           <EntitySet Name="TestSuiteRuns" EntityType="UnitTestLogModel.TestSuiteRun" />
-          <AssociationSet Name="FK__TestSuite__AppRu__3B40CD36" Association="UnitTestLogModel.FK__TestSuite__AppRu__3B40CD36">
+          <AssociationSet Name="FK__TestSuite__AppRu__25869641" Association="UnitTestLogModel.FK__TestSuite__AppRu__25869641">
             <End Role="AppRun" EntitySet="AppRuns" />
             <End Role="TestSuiteRun" EntitySet="TestSuiteRuns" />
           </AssociationSet>
-          <AssociationSet Name="FK__TestCaseR__Suite__3E1D39E1" Association="UnitTestLogModel.FK__TestCaseR__Suite__3E1D39E1">
+          <AssociationSet Name="FK__TestCaseR__Suite__286302EC" Association="UnitTestLogModel.FK__TestCaseR__Suite__286302EC">
             <End Role="TestSuiteRun" EntitySet="TestSuiteRuns" />
             <End Role="TestCaseRun" EntitySet="TestCaseRuns" />
           </AssociationSet>
-          <AssociationSet Name="FK__TestError__CaseR__40F9A68C" Association="UnitTestLogModel.FK__TestError__CaseR__40F9A68C">
+          <AssociationSet Name="FK__TestError__CaseR__2B3F6F97" Association="UnitTestLogModel.FK__TestError__CaseR__2B3F6F97">
             <End Role="TestCaseRun" EntitySet="TestCaseRuns" />
             <End Role="TestError" EntitySet="TestErrors" />
           </AssociationSet>
@@ -131,7 +131,9 @@
           <Property Name="ServerName" Type="String" Nullable="false" MaxLength="Max" Unicode="false" FixedLength="false" />
           <Property Name="StartTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="EndTime" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="TestSuiteRuns" Relationship="UnitTestLogModel.FK__TestSuite__AppRu__3B40CD36" FromRole="AppRun" ToRole="TestSuiteRun" />
+          <Property Name="Alias" Type="String" Nullable="false" MaxLength="Max" Unicode="false" FixedLength="false" />
+          <Property Name="DbType" Type="String" Nullable="false" MaxLength="Max" Unicode="false" FixedLength="false" />
+          <NavigationProperty Name="TestSuiteRuns" Relationship="UnitTestLogModel.FK__TestSuite__AppRu__25869641" FromRole="AppRun" ToRole="TestSuiteRun" />
         </EntityType>
         <EntityType Name="TestCaseRun">
           <Key>
@@ -141,8 +143,8 @@
           <Property Name="SuiteRunId" Type="Int32" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="Max" Unicode="false" FixedLength="false" />
           <Property Name="Duration" Type="Double" Nullable="false" />
-          <NavigationProperty Name="TestSuiteRun" Relationship="UnitTestLogModel.FK__TestCaseR__Suite__3E1D39E1" FromRole="TestCaseRun" ToRole="TestSuiteRun" a:GetterAccess="Internal" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" a:SetterAccess="Internal" />
-          <NavigationProperty Name="TestErrors" Relationship="UnitTestLogModel.FK__TestError__CaseR__40F9A68C" FromRole="TestCaseRun" ToRole="TestError" />
+          <NavigationProperty Name="TestSuiteRun" Relationship="UnitTestLogModel.FK__TestCaseR__Suite__286302EC" FromRole="TestCaseRun" ToRole="TestSuiteRun" a:GetterAccess="Internal" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" a:SetterAccess="Internal" />
+          <NavigationProperty Name="TestErrors" Relationship="UnitTestLogModel.FK__TestError__CaseR__2B3F6F97" FromRole="TestCaseRun" ToRole="TestError" />
         </EntityType>
         <EntityType Name="TestError">
           <Key>
@@ -151,7 +153,7 @@
           <Property Name="ErrorId" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
           <Property Name="CaseRunId" Type="Int32" />
           <Property Name="Message" Type="String" Nullable="false" MaxLength="Max" Unicode="false" FixedLength="false" />
-          <NavigationProperty Name="TestCaseRun" Relationship="UnitTestLogModel.FK__TestError__CaseR__40F9A68C" FromRole="TestError" ToRole="TestCaseRun" a:GetterAccess="Internal" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" a:SetterAccess="Internal" />
+          <NavigationProperty Name="TestCaseRun" Relationship="UnitTestLogModel.FK__TestError__CaseR__2B3F6F97" FromRole="TestError" ToRole="TestCaseRun" a:GetterAccess="Internal" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" a:SetterAccess="Internal" />
         </EntityType>
         <EntityType Name="TestSuiteRun">
           <Key>
@@ -160,13 +162,11 @@
           <Property Name="SuiteRunId" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
           <Property Name="AppRunId" Type="Int32" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="Max" Unicode="false" FixedLength="false" />
-          <Property Name="Alias" Type="String" Nullable="false" MaxLength="Max" Unicode="false" FixedLength="false" />
-          <Property Name="DbType" Type="String" Nullable="false" MaxLength="Max" Unicode="false" FixedLength="false" />
           <Property Name="Duration" Type="Double" Nullable="false" />
-          <NavigationProperty Name="AppRun" Relationship="UnitTestLogModel.FK__TestSuite__AppRu__3B40CD36" FromRole="TestSuiteRun" ToRole="AppRun" a:GetterAccess="Internal" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" a:SetterAccess="Internal" />
-          <NavigationProperty Name="TestCaseRuns" Relationship="UnitTestLogModel.FK__TestCaseR__Suite__3E1D39E1" FromRole="TestSuiteRun" ToRole="TestCaseRun" />
+          <NavigationProperty Name="AppRun" Relationship="UnitTestLogModel.FK__TestSuite__AppRu__25869641" FromRole="TestSuiteRun" ToRole="AppRun" a:GetterAccess="Internal" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" a:SetterAccess="Internal" />
+          <NavigationProperty Name="TestCaseRuns" Relationship="UnitTestLogModel.FK__TestCaseR__Suite__286302EC" FromRole="TestSuiteRun" ToRole="TestCaseRun" />
         </EntityType>
-        <Association Name="FK__TestSuite__AppRu__3B40CD36">
+        <Association Name="FK__TestSuite__AppRu__25869641">
           <End Role="AppRun" Type="UnitTestLogModel.AppRun" Multiplicity="0..1" />
           <End Role="TestSuiteRun" Type="UnitTestLogModel.TestSuiteRun" Multiplicity="*" />
           <ReferentialConstraint>
@@ -178,7 +178,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__TestCaseR__Suite__3E1D39E1">
+        <Association Name="FK__TestCaseR__Suite__286302EC">
           <End Role="TestSuiteRun" Type="UnitTestLogModel.TestSuiteRun" Multiplicity="0..1" />
           <End Role="TestCaseRun" Type="UnitTestLogModel.TestCaseRun" Multiplicity="*" />
           <ReferentialConstraint>
@@ -190,7 +190,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__TestError__CaseR__40F9A68C">
+        <Association Name="FK__TestError__CaseR__2B3F6F97">
           <End Role="TestCaseRun" Type="UnitTestLogModel.TestCaseRun" Multiplicity="0..1" />
           <End Role="TestError" Type="UnitTestLogModel.TestError" Multiplicity="*" />
           <ReferentialConstraint>
@@ -217,6 +217,8 @@
                 <ScalarProperty Name="ServerName" ColumnName="ServerName" />
                 <ScalarProperty Name="StartTime" ColumnName="StartTime" />
                 <ScalarProperty Name="EndTime" ColumnName="EndTime" />
+                <ScalarProperty Name="Alias" ColumnName="Alias" />
+                <ScalarProperty Name="DbType" ColumnName="DbType" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -245,8 +247,6 @@
                 <ScalarProperty Name="SuiteRunId" ColumnName="SuiteRunId" />
                 <ScalarProperty Name="AppRunId" ColumnName="AppRunId" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Alias" ColumnName="Alias" />
-                <ScalarProperty Name="DbType" ColumnName="DbType" />
                 <ScalarProperty Name="Duration" ColumnName="Duration" />
               </MappingFragment>
             </EntityTypeMapping>

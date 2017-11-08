@@ -46,8 +46,8 @@ namespace TestResult.Controllers
                 {
                     try
                     {
-                        AppRun r = ProcessFile(filename);
-                        SaveToDatabase(r);
+                        List<AppRun> runs = ProcessFile(filename);
+                        SaveToDatabase(runs);
 
                         // move successfully processed file to backup dir
                         string backupDir = cleanPath + @"\Backup\";
@@ -72,6 +72,11 @@ namespace TestResult.Controllers
             }
         }
 
+        private List<AppRun> CleanDbAlias(AppRun r)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// writes message to logfile in given directory
         /// </summary>
@@ -92,8 +97,9 @@ namespace TestResult.Controllers
         /// </summary>
         /// <param name="filename"></param>
         /// <returns></returns>
-        private AppRun ProcessFile(string filename)
+        private List<AppRun> ProcessFile(string filename)
         {
+            List<AppRun> allRuns = new List<AppRun>();
             AppRun currentRun = new AppRun();
             TestSuiteRun currentSuite = new TestSuiteRun();
             TestCaseRun currentCase = new TestCaseRun();
@@ -179,7 +185,7 @@ namespace TestResult.Controllers
                     currentRun.EndTime = Convert.ToDateTime(line.Replace("Ende: ", ""));
             }
 
-            return currentRun;
+            return allRuns;
         }
 
         /// <summary>

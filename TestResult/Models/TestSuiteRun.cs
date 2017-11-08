@@ -22,8 +22,6 @@ namespace TestResult.Models
         public int SuiteRunId { get; set; }
         public Nullable<int> AppRunId { get; set; }
         public string Name { get; set; }
-        public string Alias { get; set; }
-        public string DbType { get; set; }
         public double Duration { get; set; }
     
         internal virtual AppRun AppRun { get; set; }

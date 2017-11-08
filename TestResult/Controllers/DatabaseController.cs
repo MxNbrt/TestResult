@@ -39,6 +39,8 @@ namespace TestResult.Controllers
 
         public HttpResponseMessage GetAppArea(string id)
         {
+            new FileSystemController().checkDirectories();
+
             string sqlQuery =
                 "select AppRunId, AppArea, BuildDate, ServerName, StartTime, EndTime, " +
                 "(select count(*) from TestSuiteRun s where s.AppRunId = r.AppRunId) as SuiteCount, " +
