@@ -256,8 +256,9 @@
     <Content Include="CustomScripts\DatabaseSvc.js" />
     <Content Include="CustomScripts\GridUtils.js" />
     <Content Include="CustomScripts\RunCtrl.js" />
-    <Content Include="favicon.ico" />
+    <Content Include="Content\favicon.ico" />
     <Content Include="Global.asax" />
+    <Content Include="Content\menuBackGround.jpg" />
     <Content Include="Models\Model.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>Model.edmx</DependentUpon>

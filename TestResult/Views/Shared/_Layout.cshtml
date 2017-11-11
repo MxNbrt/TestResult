@@ -5,9 +5,10 @@
 
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width" />
+    <link rel="shortcut icon" type="image/png" href="/Content/favicon.ico"/>
     <title>@ViewBag.Title</title>
 
-    <!-- scripts -->
+    <!-- general scripts -->
     @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/jquery")
     <script src="~/Scripts/angular.js"></script>     
@@ -15,7 +16,7 @@
     <script src="~/scripts/jquery-3.2.1.min.js"></script>  
     <script src="~/scripts/dx.web.js"></script>  
       
-    <!-- my own scripts -->
+    <!-- my custom scripts -->
     <script src="~/customscripts/DatabaseSvc.js"></script>
     <script src="~/customscripts/AppAreaCtrl.js"></script>  
     <script src="~/customscripts/RunCtrl.js"></script>  
@@ -27,10 +28,6 @@
     <link rel="stylesheet" type="text/css" href="~/Content/dx.spa.css" />
     <link rel="stylesheet" type="text/css" href="~/Content/dx.common.css" />
     <link rel="stylesheet" type="text/css" href="~/Content/dx.light.css" />
-
-    <link rel='stylesheet prefetch' href='https://cdn.gitcdn.link/cdn/angular/bower-material/v1.1.5/angular-material.css'>
-    <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:400,700'>
-    <script src='https://cdn.gitcdn.link/cdn/angular/bower-material/v1.1.5/angular-material.js'></script>
   </head>
   <body>
     <div ng-controller="HomeCtrl" layout="column" style="height: 100%;">
