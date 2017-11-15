@@ -8,8 +8,7 @@
 ])
 
 .controller('HomeCtrl', function ($scope, DatabaseSvc) {
-    var servCall = DatabaseSvc.GetLatest();
-    servCall.then(function (data) {
+    DatabaseSvc.GetLatest().then(function (data) {
         $scope.gridAllAppAreas = GetGridObject(data, false);
         $scope.menuAppAreas = data;
     }, function (error) {

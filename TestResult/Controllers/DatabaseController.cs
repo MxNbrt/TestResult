@@ -32,8 +32,8 @@ namespace TestResult.Controllers
                 ")) " +
                 "as ErrorCount " +
                 "from ( " +
-                "SELECT MAX(StartTime) OVER (partition by AppArea, DbType, Version) MaxStartTime, * " +
-                "from AppRun) r where StartTime = MaxStartTime";
+                "SELECT MAX(AppRunId) OVER (partition by AppArea, DbType, Version) MaxAppRunId, * " +
+                "from AppRun) r where AppRunId = MaxAppRunId";
             return ExecuteQuery(sqlQuery);
         }
 
@@ -42,16 +42,22 @@ namespace TestResult.Controllers
             new FileSystemController().checkDirectories();
 
             string sqlQuery =
-                "select AppRunId, AppArea, BuildDate, ServerName, StartTime, EndTime, Alias, DbType, Version, " +
-                "(select count(*) from TestSuiteRun s where s.AppRunId = r.AppRunId) as SuiteCount, " +
-                "(select count(*) from TestCaseRun c where c.SuiteRunId in  " +
-                "    (select SuiteRunId from TestSuiteRun s where s.AppRunId = r.AppRunId) " +
-                ") as CaseCount, " +
-                "(select count(distinct(e.CaseRunId)) from TestError e where e.CaseRunId in " +
-                "(select CaseRunId from TestCaseRun c where c.SuiteRunId in  " +
-                "    (select SuiteRunId from TestSuiteRun s where s.AppRunId = r.AppRunId) " +
-                ")) as ErrorCount " +
-                "from dbo.AppRun r where lower(AppArea) = '" + id.ToLower() + "'";
+                "with TempTable as ( " +
+                "    select AppRunId, ServerName, Alias, DbType, StartTime, EndTime,  Version,  " +
+                "    convert(date, StartTime) as StartDate,  " +
+                "    (select count(distinct(e.CaseRunId)) from TestError e where e.CaseRunId in  " +
+                "    (select CaseRunId from TestCaseRun c where c.SuiteRunId in   " +
+                "        (select SuiteRunId from TestSuiteRun s where s.AppRunId = r.AppRunId) " +
+                "    )) as ErrorCount " +
+                "    from dbo.AppRun r where lower(AppArea) = '" + id.ToLower() + "' " +
+                ") " +
+
+                "select AppRunId, ServerName, Alias, StartDate, StartTime, EndTime,   " +
+                "MSSQL55 = case when DbType = 'MSSQL' and Version = '5.5' then ErrorCount else null end,  " +
+                "MSSQL54 = case when DbType = 'MSSQL' and Version = '5.4' then ErrorCount else null end,  " +
+                "ORACLE55 = case when DbType = 'ORACLE' and Version = '5.5' then ErrorCount else null end, " +
+                "ORACLE54 = case when DbType = 'ORACLE' and Version = '5.4' then ErrorCount else null end " +
+                "from TempTable";
 
             return ExecuteQuery(sqlQuery);
         }
