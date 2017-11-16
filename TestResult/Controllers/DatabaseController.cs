@@ -43,8 +43,7 @@ namespace TestResult.Controllers
 
             string sqlQuery =
                 "with TempTable as ( " +
-                "    select AppRunId, ServerName, Alias, DbType, StartTime, EndTime,  Version,  " +
-                "    convert(date, StartTime) as StartDate,  " +
+                "    select AppRunId, AppArea, ServerName, Alias, StartTime, EndTime, DbType, Version,  " +
                 "    (select count(distinct(e.CaseRunId)) from TestError e where e.CaseRunId in  " +
                 "    (select CaseRunId from TestCaseRun c where c.SuiteRunId in   " +
                 "        (select SuiteRunId from TestSuiteRun s where s.AppRunId = r.AppRunId) " +
@@ -52,7 +51,7 @@ namespace TestResult.Controllers
                 "    from dbo.AppRun r where lower(AppArea) = '" + id.ToLower() + "' " +
                 ") " +
 
-                "select AppRunId, ServerName, Alias, StartDate, StartTime, EndTime,   " +
+                "select AppRunId, AppArea, ServerName, Alias, StartTime, EndTime,   " +
                 "MSSQL55 = case when DbType = 'MSSQL' and Version = '5.5' then ErrorCount else null end,  " +
                 "MSSQL54 = case when DbType = 'MSSQL' and Version = '5.4' then ErrorCount else null end,  " +
                 "ORACLE55 = case when DbType = 'ORACLE' and Version = '5.5' then ErrorCount else null end, " +

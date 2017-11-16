@@ -66,7 +66,21 @@ function GetGridObject(data, isRunView) {
             {
                 caption: 'Suite',
                 calculateCellValue: function (data) {
-                    return data.SuiteName + ' ||| Case: ' + data.CaseName + ' ||| Dauer: ' + data.Duration + ' Sekunden';
+                    var secs = data.Duration % 60;
+                    if (secs > 0)
+                        secs = Math.round(secs * 100) / 100;
+                    
+                    var mins = (data.Duration - secs) / 60;
+
+                    var timestring = '';
+                    if (mins === 1 )
+                        timestring += '1 Minute ';
+                    else if (mins > 1)
+                        timestring += mins + ' Minuten ';
+
+                    timestring += secs + ' Sekunden';
+
+                    return data.SuiteName + ' ||| Case: ' + data.CaseName + ' ||| Dauer: ' + timestring;
                 },
                 groupIndex: 0,
                 sortOrder: 'desc',

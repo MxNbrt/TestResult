@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Web;
 using TestResult.Models;
 
@@ -21,7 +22,6 @@ namespace TestResult.Controllers
             foreach (AppRun appRun in appRuns)
             {
                 // dont save apprun in db if already exists
-                // todo check for starttime, server, alias
                 var runAlreadyInDb = from st in context.AppRuns where st.StartTime == appRun.StartTime 
                     && st.ServerName == appRun.ServerName && st.Alias == appRun.Alias select st;
 
@@ -88,12 +88,24 @@ namespace TestResult.Controllers
         /// <param name="cleanPath"></param>
         /// <param name="message"></param>
         /// <param name="writeDateTime"></param>
-        private void writeLog(string cleanPath, string message, bool writeDateTime)
+        public void writeLog(string cleanPath, string message, bool writeDateTime)
         {
-            string content = writeDateTime ? DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + " " + message : message;
-            using (StreamWriter file = new StreamWriter(cleanPath + @"\ServiceLog.txt", true))
+            for (int i = 0; i < 5; i++)
             {
-                file.WriteLine(content);
+                try
+                {
+                    using (StreamWriter file = new StreamWriter(cleanPath + @"\ServiceLog.txt", true))
+                    {
+                        string starter = writeDateTime ? DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + " " : 
+                            "                    ";
+                        file.WriteLine(starter + message);
+                    }
+                }
+                catch
+                {
+                    // sleep for 1 second and try to write log again
+                    Thread.Sleep(1000);
+                }
             }
         }
 
@@ -109,7 +121,7 @@ namespace TestResult.Controllers
             AppRun dummyRun = new AppRun();
             TestSuiteRun currentSuite = new TestSuiteRun();
             TestCaseRun currentCase = new TestCaseRun();
-            string currentErrorLine = "";
+            string allErrorLines = "";
             string currentSuiteError = "";
 
             foreach (string line in File.ReadAllLines(filename))
@@ -124,7 +136,7 @@ namespace TestResult.Controllers
                         currentCase.Name = line.Substring(0, line.IndexOf(" gestartet")).Trim();
                         currentSuite.TestCaseRuns.Add(currentCase);
                         //reset current error
-                        currentErrorLine = "";
+                        allErrorLines = "";
                     }
                     // end of testcase
                     else if (line.Contains(" beendet [Dauer: "))
@@ -132,23 +144,31 @@ namespace TestResult.Controllers
                         int strStart = line.IndexOf("[Dauer: ") + 8;
                         string duration = line.Substring(strStart, line.IndexOf("]") - strStart).Trim();
                         currentCase.Duration = ConvertDurationString(duration);
-                        currentErrorLine = currentErrorLine.Trim();
-                        currentErrorLine = currentErrorLine.Replace("#Testfall fehlgeschlagen: ", "");
-                        currentErrorLine = currentErrorLine.Replace("#Testfall fehlerhaft: ", "");
 
-                        if (!String.IsNullOrWhiteSpace(currentErrorLine))
+                        if (String.IsNullOrWhiteSpace(allErrorLines))
+                        {
+                            allErrorLines = "";
+                            continue;
+                        }
+
+                        foreach (string error in allErrorLines.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
                         {
                             TestError err = new TestError();
-                            err.Message = currentErrorLine;
-                            // TODO split multiple errors
+                            err.Message = error;
+
+                            // remove unnecessary text
+                            if (err.Message.Contains(" ist ungleich berechneten Wert ") && err.Message.Contains(", expected: <False> but was: <True>"))
+                                err.Message = err.Message.Replace(", expected: <False> but was: <True>", "");
+                            
                             currentCase.TestErrors.Add(err);
                         }
-                        currentErrorLine = "";
                     }
                     // testerror
                     else
                     {
-                        currentErrorLine += line.Trim() + " ";
+                        string line2 = line.Replace("#Testfall fehlgeschlagen: ", "");
+                        line2 = line2.Replace("#Testfall fehlerhaft: ", "");
+                        allErrorLines += line2.Trim() + Environment.NewLine;
                     }
                 }
                 // TestSuiteRun

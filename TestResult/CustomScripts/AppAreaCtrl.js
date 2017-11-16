@@ -1,5 +1,6 @@
 ﻿angular.module("AppArea", [
     'DatabaseSvc',
+    'GridUtils',
     'dx'
 ])
 
@@ -8,16 +9,18 @@
 
     DatabaseSvc.GetAppArea(appArea).then(function (data) {
         $scope.chartAppArea = GetChartObject(data);
+        document.title = 'AppArea ' + data[0].AppArea;
     }, function (error) {
         console.log(error.status + ' ' + error.statusText + ' - ' + error.data.Message)
     });
 
     function GetChartObject(data) {
         return {
-            palette: "violet",
+            palette: "bright",
             dataSource: data,
             commonSeriesSettings: {
-                argumentField: "StartTime"
+                argumentField: "StartTime",
+                tagField: 'AppRunId'
             },
             argumentAxis: {
                 // x-Axis
@@ -26,6 +29,14 @@
                 },
                 grid: {
                     visible: true
+                },
+                label: {
+                    customizeText: function () {
+                        var date = GetDateTimeString(new Date(this.value));
+                        date = date.split(" ")[0];
+                        date = date.substring(0, 5);
+                        return date;
+                    }
                 }
             },
             valueAxis: {
@@ -45,7 +56,7 @@
                 rowCount: 1
             },
             title: {
-                text: "Unittest Ergebnisse " + appArea
+                text: "Unittest Ergebnisse " + data[0].AppArea
             },
             size: {
                 width: $(window).width() - $("#sidebar").width() - 70,
@@ -55,8 +66,13 @@
                 enabled: true,
                 customizeTooltip: function (arg) {
                     return {
-                        text: arg.valueText + ' ' + arg.argumentText + ' ' + arg.seriesName
+                        text: GetDateTimeString(new Date(arg.argumentText)) + ': ' + arg.valueText + ' Fehler'
                     };
+                }
+            },
+            onPointClick: function (info) {
+                if (info.target.originalValue > 0) {
+                    window.location = "/run/" + info.target.tag;
                 }
             }
         };

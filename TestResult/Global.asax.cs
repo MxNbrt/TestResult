@@ -6,6 +6,7 @@ using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using TestResult.Controllers;
 
 namespace TestResult
 {
@@ -16,6 +17,7 @@ namespace TestResult
     {
         protected void Application_Start()
         {
+            new FileSystemController().writeLog(@"\\VMWREWETCDEV\Test$", "Application_Start", true);
             AreaRegistration.RegisterAllAreas();
 
             WebApiConfig.Register(GlobalConfiguration.Configuration);
