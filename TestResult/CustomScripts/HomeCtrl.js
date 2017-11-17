@@ -4,6 +4,7 @@
    'AppArea',
    'Run',
    'GridUtils',
+   'FormUtils',
    'dx'
 ])
 

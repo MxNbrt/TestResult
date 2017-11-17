@@ -14,13 +14,14 @@
     <script src="~/Scripts/angular.js"></script>     
     <script src="~/Scripts/angular-route.min.js"></script>
     <script src="~/scripts/jquery-3.2.1.min.js"></script>  
-    <script src="~/scripts/dx.viz-web.js"></script>  
+    <script src="~/scripts/dx.viz-web.debug.js"></script>  
       
     <!-- my custom scripts -->
     <script src="~/customscripts/DatabaseSvc.js"></script>
     <script src="~/customscripts/AppAreaCtrl.js"></script>  
     <script src="~/customscripts/RunCtrl.js"></script>  
     <script src="~/customscripts/GridUtils.js"></script>  
+    <script src="~/customscripts/FormUtils.js"></script>  
     <script src="~/customscripts/HomeCtrl.js"></script>  
       
     <!-- stylesheets -->
@@ -47,7 +48,7 @@
           </li>
           <li class="divider"></li>
           <div ng-repeat="menuItem in menuAppAreas">
-            <div ng-show="{{ menuItem.DbType === 'MSSQL' }}">
+            <div ng-show="{{ menuItem.DbType === 'MSSQL' && menuItem.Version === '5.5' }}">
                 <li>
                   <a href="/apparea/{{ menuItem.AppArea | lowercase }}">{{ menuItem.AppArea }}
                     <div ng-show="{{ menuItem.ErrorCount > 0 }}">
@@ -60,12 +61,12 @@
         </ul>
       </aside>
 
-      <!-- separate menu and content -->
-      <div class="splitter"></div>
 
       <!-- actual content -->
       <div class="wrapper">
-        <div class="constructor">
+          <!-- separate menu and content -->
+		  <div class="splitter"></div>
+          <div class="constructor">
             @RenderBody()
         </div>
       </div>

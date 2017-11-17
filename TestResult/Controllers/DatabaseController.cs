@@ -34,7 +34,7 @@ namespace TestResult.Controllers
                 "from ( " +
                 "SELECT MAX(AppRunId) OVER (partition by AppArea, DbType, Version) MaxAppRunId, * " +
                 "from AppRun) r where AppRunId = MaxAppRunId";
-            return ExecuteQuery(sqlQuery);
+            return CreateResponse(ExecuteQuery(sqlQuery));
         }
 
         public HttpResponseMessage GetAppArea(string id)
@@ -58,7 +58,7 @@ namespace TestResult.Controllers
                 "ORACLE54 = case when DbType = 'ORACLE' and Version = '5.4' then ErrorCount else null end " +
                 "from TempTable";
 
-            return ExecuteQuery(sqlQuery);
+            return CreateResponse(ExecuteQuery(sqlQuery));
         }
 
         public HttpResponseMessage GetRunErrors(string id)
@@ -68,8 +68,11 @@ namespace TestResult.Controllers
                 "join TestCaseRun c on s.SuiteRunId = c.SuiteRunId " +
                 "join TestError e on e.CaseRunId = c.CaseRunId " +
                 "where AppRunId = '" + id + "'";
-
-            return ExecuteQuery(sqlQuery);
+            string errors = ExecuteQuery(sqlQuery);
+            string appRun = ExecuteQuery("select AppRunId, AppArea + ' ' + Version as AppArea, BuildDate, ServerName, Alias, DbType, " +
+                "StartTime, EndTime from AppRun where AppRunId='" + id + "'");
+            string response = appRun.Remove(appRun.Length - 2) + ",\"Errors\":" + errors + "}]";
+            return CreateResponse(response);
         }
 
         /// <summary>
@@ -77,7 +80,7 @@ namespace TestResult.Controllers
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
-        public HttpResponseMessage ExecuteQuery(string query)
+        public string ExecuteQuery(string query)
         {
             DataTable dt = new DataTable();
             DbConnection conn = context.Database.Connection;
@@ -101,8 +104,18 @@ namespace TestResult.Controllers
                     conn.Close();
             }
 
+            return JsonConvert.SerializeObject(dt);
+        }
+
+        /// <summary>
+        /// creates a new http response with json content
+        /// </summary>
+        /// <param name="jsonObject"></param>
+        /// <returns></returns>
+        public HttpResponseMessage CreateResponse(string jsonObject)
+        {
             var response = Request.CreateResponse(HttpStatusCode.OK);
-            response.Content = new StringContent(JsonConvert.SerializeObject(dt), Encoding.UTF8, "application/json");
+            response.Content = new StringContent(jsonObject, Encoding.UTF8, "application/json");
             return response;
         }
     }

@@ -7,20 +7,21 @@
 .controller('AppAreaCtrl', function ($scope, $location, DatabaseSvc) {
     var appArea = $location.$$absUrl.split("/").slice(-1)[0];
 
-    DatabaseSvc.GetAppArea(appArea).then(function (data) {
-        $scope.chartAppArea = GetChartObject(data);
-        document.title = 'AppArea ' + data[0].AppArea;
+    DatabaseSvc.GetAppArea(appArea).then(function (errorData) {
+        $scope.chartAppArea = GetChartObject(errorData);
+        document.title = 'AppArea ' + errorData[0].AppArea;
     }, function (error) {
         console.log(error.status + ' ' + error.statusText + ' - ' + error.data.Message)
     });
 
-    function GetChartObject(data) {
+    function GetChartObject(errorData) {
         return {
             palette: "bright",
-            dataSource: data,
+            dataSource: errorData,
             commonSeriesSettings: {
                 argumentField: "StartTime",
-                tagField: 'AppRunId'
+                tagField: 'AppRunId',
+                type: "line"
             },
             argumentAxis: {
                 // x-Axis
@@ -56,7 +57,7 @@
                 rowCount: 1
             },
             title: {
-                text: "Unittest Ergebnisse " + data[0].AppArea
+                text: "Unittest Ergebnisse " + errorData[0].AppArea
             },
             size: {
                 width: $(window).width() - $("#sidebar").width() - 70,

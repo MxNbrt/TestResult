@@ -21,7 +21,7 @@ function GetGridObject(data, isRunView) {
         },
         paging: { 
             enabled: !isRunView,
-            pageSize: 18
+            pageSize: 24
         },
         grouping: {
             allowCollapsing: false
@@ -162,6 +162,7 @@ function GetGridObject(data, isRunView) {
 };
 
 function GetDateTimeString(date) {
-    return (date.getDate() < 10 ? '0' : '') + date.getDate() + '.' + (date.getMonth() < 10 ? '0' : '') + date.getMonth() + '.' + date.getFullYear() + ' ' +
-        (date.getHours() < 10 ? '0' : '') + date.getHours() + ':' + (date.getMinutes() < 10 ? '0' : '') + date.getMinutes();
+    return (date.getDate() < 10 ? '0' : '') + date.getDate() + '.' + (date.getMonth() < 9 ? '0' : '') +
+        (date.getMonth() + 1) + '.' + date.getFullYear() + ' ' + (date.getHours() < 10 ? '0' : '') +
+        date.getHours() + ':' + (date.getMinutes() < 10 ? '0' : '') + date.getMinutes();
 };

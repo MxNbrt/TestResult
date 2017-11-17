@@ -253,6 +253,7 @@
     <Content Include="Content\themes\base\tabs.css" />
     <Content Include="Content\themes\base\theme.css" />
     <Content Include="Content\themes\base\tooltip.css" />
+    <Content Include="CustomScripts\FormUtils.js" />
     <Content Include="CustomScripts\HomeCtrl.js" />
     <Content Include="CustomScripts\DatabaseSvc.js" />
     <Content Include="CustomScripts\GridUtils.js" />
@@ -339,6 +340,7 @@
     <Content Include="Content\icons\dxiconsios.ttf" />
     <Content Include="Content\icons\dxicons.woff" />
     <Content Include="Content\icons\dxicons.ttf" />
+    <None Include="Properties\PublishProfiles\deploy_vmwrewetcdev.pubxml" />
     <None Include="Properties\PublishProfiles\TestResult_Filesystem.pubxml" />
     <None Include="Properties\PublishProfiles\TestResult_IIS_Deploy.pubxml" />
     <None Include="Scripts\jquery-3.2.1.intellisense.js" />
