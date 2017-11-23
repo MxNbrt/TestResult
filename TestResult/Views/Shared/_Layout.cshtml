@@ -7,57 +7,29 @@
     <meta name="viewport" content="width=device-width" />
     <link rel="shortcut icon" type="image/png" href="/Content/favicon.ico"/>
     <title>@ViewBag.Title</title>
-
-    <!-- general scripts -->
-    @Scripts.Render("~/bundles/modernizr")
-    @Scripts.Render("~/bundles/jquery")
-    <script src="~/Scripts/angular.js"></script>     
-    <script src="~/Scripts/angular-route.min.js"></script>
-    <script src="~/scripts/jquery-3.2.1.min.js"></script>  
-    <script src="~/scripts/dx.viz-web.debug.js"></script>  
       
-    <!-- my custom scripts -->
-    <script src="~/customscripts/DatabaseSvc.js"></script>
-    <script src="~/customscripts/AppAreaCtrl.js"></script>  
-    <script src="~/customscripts/RunCtrl.js"></script>  
-    <script src="~/customscripts/GridUtils.js"></script>  
-    <script src="~/customscripts/FormUtils.js"></script>  
-    <script src="~/customscripts/HomeCtrl.js"></script>  
-      
-    <!-- stylesheets -->
-    @Styles.Render("~/Content/css")
-    <link rel="stylesheet" type="text/css" href="~/Content/dx.spa.css" />
-    <link rel="stylesheet" type="text/css" href="~/Content/dx.common.css" />
-    <link rel="stylesheet" type="text/css" href="~/Content/dx.light.css" />
+    @Scripts.Render("~/bundles/jsfiles")
+    @Scripts.Render("~/bundles/customscripts")
+    @Styles.Render("~/Content/cssfiles")
   </head>
   <body>
     <div ng-controller="HomeCtrl" layout="column" style="height: 100%;">
-      <div class="sidebar-overlay"></div>
-      <aside id="sidebar" class="sidebar sidebar-default open" role="navigation">
-        <div class="sidebar-header header-cover">
-            <div class="title">TestResult</div>
+      <aside id="sidebar" class="sidebar sidebar-default open">
+        <div class="title">
+            TestResult
         </div>
 
         <!-- Sidebar navigation -->
-        <ul class="nav sidebar-nav">
-          <!--
-          <li>@Html.ActionLink("Start", "Index", "Home", null,  null)</li>
-          -->
+        <ul class="sidebar-nav">
           <li>
               <a href="/">Dashboard</a>
           </li>
           <li class="divider"></li>
-          <div ng-repeat="menuItem in menuAppAreas">
-            <div ng-show="{{ menuItem.DbType === 'MSSQL' && menuItem.Version === '5.5' }}">
-                <li>
-                  <a href="/apparea/{{ menuItem.AppArea | lowercase }}">{{ menuItem.AppArea }}
-                    <div ng-show="{{ menuItem.ErrorCount > 0 }}">
-                      <span class="sidebar-badge badge-circle">{{ menuItem.ErrorCount }}</span>
-                    </div>            
-                  </a>
-                </li>
-            </div>
-          </div>
+          <li ng-repeat="menuItem in menuAppAreas" ng-show="{{ menuItem.DbType === 'MSSQL' && menuItem.Version === '5.5' }}">
+              <a href="/apparea/{{ menuItem.AppArea | lowercase }}">{{ menuItem.AppArea }}
+                  <span ng-show="{{ menuItem.ErrorCount > 0 }}" class="sidebar-badge badge-circle">{{ menuItem.ErrorCount }}</span>
+              </a>
+          </li>
         </ul>
       </aside>
 
@@ -66,7 +38,7 @@
       <div class="wrapper">
           <!-- separate menu and content -->
 		  <div class="splitter"></div>
-          <div class="constructor">
+          <div class="content">
             @RenderBody()
         </div>
       </div>
