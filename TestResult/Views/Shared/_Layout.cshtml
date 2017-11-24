@@ -22,11 +22,11 @@
         <!-- Sidebar navigation -->
         <ul class="sidebar-nav">
           <li>
-              <a href="/">Dashboard</a>
+              <a href="/" target="_parent">Dashboard</a>
           </li>
           <li class="divider"></li>
           <li ng-repeat="menuItem in menuAppAreas" ng-show="{{ menuItem.DbType === 'MSSQL' && menuItem.Version === '5.5' }}">
-              <a href="/apparea/{{ menuItem.AppArea | lowercase }}">{{ menuItem.AppArea }}
+              <a href="/apparea/{{ menuItem.AppArea | lowercase }}" target="_parent">{{ menuItem.AppArea }}
                   <span ng-show="{{ menuItem.ErrorCount > 0 }}" class="sidebar-badge badge-circle">{{ menuItem.ErrorCount }}</span>
               </a>
           </li>
