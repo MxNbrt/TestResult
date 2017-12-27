@@ -4,6 +4,7 @@
 
 function GetGridObject(data, isRunView) {
     return {
+        noDataText: (isRunView) ? 'Keine Fehler vorhanden' : 'Logdateien werden gelesen',
         dataSource: data,
         columnChooser: {
             enabled: true,
@@ -24,7 +25,8 @@ function GetGridObject(data, isRunView) {
             pageSize: 24
         },
         grouping: {
-            allowCollapsing: false
+            allowCollapsing: isRunView,
+            expandMode: "rowClick"
         },
         groupPanel: {
             visible: true
@@ -47,12 +49,12 @@ function GetGridObject(data, isRunView) {
             {
                 caption: 'SuiteName',
                 dataField: 'SuiteName',
-                visible: false
+                groupIndex: 0
             },
             {
                 caption: 'CaseName',
                 dataField: 'CaseName',
-                visible: false
+                groupIndex: 1
             },
             {
                 caption: 'Dauer',
@@ -62,30 +64,6 @@ function GetGridObject(data, isRunView) {
             {
                 caption: 'Fehlermeldung',
                 dataField: 'Message'
-            },
-            {
-                caption: 'Suite',
-                calculateCellValue: function (data) {
-                    var secs = data.Duration % 60;
-                    if (secs > 0)
-                        secs = Math.round(secs * 100) / 100;
-                    
-                    var mins = (data.Duration - secs) / 60;
-
-                    var timestring = '';
-                    if (mins === 1 )
-                        timestring += '1 Minute ';
-                    else if (mins > 1)
-                        timestring += mins + ' Minuten ';
-
-                    timestring += secs + ' Sekunden';
-
-                    return data.SuiteName + ' ||| Case: ' + data.CaseName + ' ||| Dauer: ' + timestring;
-                },
-                groupIndex: 0,
-                sortOrder: 'desc',
-                sortIndex: 0,
-                allowSorting: true
             }
         ] : [
             {
@@ -157,7 +135,38 @@ function GetGridObject(data, isRunView) {
                 groupIndex: 0,
                 sortOrder: 'asc'
             }
-        ]
+        ],
+        summary: {
+            groupItems: (isRunView) ? [{
+                column: "Message",
+                summaryType: "count",
+                displayFormat: "{0} Fehler"
+            }, {
+                column: "Duration",
+                summaryType: "max",
+                displayFormat: function (secs) {
+                    // convert secs to mins
+                    var mins = Math.floor(secs / 60);
+                    var secs = secs % 60;
+
+                    // round secs to 2 decimals
+                    if (secs > 0)
+                        secs = Math.round(secs * 100) / 100;
+
+                    var timestring = '';
+                    if (mins === 1)
+                        timestring += '1 Minute ';
+                    else if (mins > 1)
+                        timestring += mins + ' Minuten ';
+
+                    return timestring + secs + ' Sekunden';
+                }
+            }] : [{
+                column: "ErrorCount",
+                summaryType: "sum",
+                displayFormat: "{0} Fehler"
+            }]
+        }
     };
 };
 

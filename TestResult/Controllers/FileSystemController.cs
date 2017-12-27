@@ -157,8 +157,8 @@ namespace TestResult.Controllers
                             err.Message = error;
 
                             // remove unnecessary text
-                            if (err.Message.Contains(" ist ungleich berechneten Wert ") && err.Message.Contains(", expected: <False> but was: <True>"))
-                                err.Message = err.Message.Replace(", expected: <False> but was: <True>", "");
+                            if (err.Message.Contains(" ist ungleich berechneten Wert ") && err.Message.Contains(", expected: <"))
+                                err.Message = err.Message.Substring(0, err.Message.IndexOf(", expected: <") - 1).Trim();
                             
                             currentCase.TestErrors.Add(err);
                         }

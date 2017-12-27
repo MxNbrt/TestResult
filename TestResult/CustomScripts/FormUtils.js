@@ -27,14 +27,14 @@ function GetFormObject(data) {
             },
             {
                 dataField: "BuildDate",
-                editorType: "dxDateBox",
                 label: { text: "Builddatum" },
+                editorType: "dxDateBox",
                 editorOptions: { displayFormat: "dd.MM.yyyy" }
             },
             {
                 dataField: "StartTime",
-                editorType: "dxDateBox",
                 label: { text: "Testdatum" },
+                editorType: "dxDateBox",
                 editorOptions: { displayFormat: "dd.MM.yyyy" },
                 colspan: 2
             },
@@ -45,10 +45,8 @@ function GetFormObject(data) {
                 editorOptions: { type: "time", displayFormat: "HH:mm" }
             },
             {
-                dataField: "EndTime",
-                label: { text: "Endzeit" },
-                editorType: "dxDateBox",
-                editorOptions: { type: "time", displayFormat: "HH:mm" }
+                dataField: "Duration",
+                label: { text: "Laufzeit" }
             },
             {
                 itemType: "empty"

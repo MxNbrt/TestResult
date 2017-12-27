@@ -1,9 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -15,6 +13,23 @@ namespace TestResult.Controllers
     public class DatabaseController : ApiController
     {
         private UnitTestLogEntities context = new UnitTestLogEntities();
+
+        [HttpGet]
+        public HttpResponseMessage DeleteRun(string id)
+        {
+            try
+            {
+                AppRun run = context.AppRuns.Find(Convert.ToInt32(id));
+                context.AppRuns.Remove(run);
+                context.SaveChanges();
+
+                return CreateResponse("{\"success\": true, \"message\": \"\"}");
+            }
+            catch (Exception ex)
+            {
+                return CreateResponse("{\"success\": false, \"message\": \"" + ex.ToString() + "\"}");
+            }
+        }
 
         public HttpResponseMessage GetLatest()
         {
@@ -63,14 +78,14 @@ namespace TestResult.Controllers
 
         public HttpResponseMessage GetRunErrors(string id)
         {
-            string sqlQuery =
-                "select s.Name as SuiteName, c.Name as CaseName, c.Duration, e.Message from TestSuiteRun s " +
+            string errors = ExecuteQuery("select s.Name as SuiteName, c.Name as CaseName, c.Duration, e.Message from TestSuiteRun s " +
                 "join TestCaseRun c on s.SuiteRunId = c.SuiteRunId " +
                 "join TestError e on e.CaseRunId = c.CaseRunId " +
-                "where AppRunId = '" + id + "'";
-            string errors = ExecuteQuery(sqlQuery);
-            string appRun = ExecuteQuery("select AppRunId, AppArea + ' ' + Version as AppArea, BuildDate, ServerName, Alias, DbType, " +
-                "StartTime, EndTime from AppRun where AppRunId='" + id + "'");
+                "where AppRunId = '" + id + "'");
+            string appRun = ExecuteQuery("select AppRunId, AppArea + ' ' + Version as AppArea, BuildDate, ServerName, Alias, DbType, StartTime, EndTime, " +
+            "convert(varchar(30), (datediff(mi, StartTime, EndTime) / 60)) + ':' + RIGHT('0' + convert(varchar(30), (datediff(mi, StartTime, EndTime) % 60)), 2)" +
+            "as Duration from AppRun where AppRunId='" + id + "'");
+
             string response = appRun.Remove(appRun.Length - 2) + ",\"Errors\":" + errors + "}]";
             return CreateResponse(response);
         }
