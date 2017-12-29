@@ -17,7 +17,9 @@ namespace TestResult
     {
         protected void Application_Start()
         {
-            new FileSystemController().writeLog(@"\\VMWREWETCDEV\Test$", "Application_Start", true);
+            // monitor Application_Start for performance
+            new FileSystemController().writeLog("Application_Start", true);
+
             AreaRegistration.RegisterAllAreas();
 
             WebApiConfig.Register(GlobalConfiguration.Configuration);

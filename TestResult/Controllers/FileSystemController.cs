@@ -16,21 +16,20 @@ namespace TestResult.Controllers
         /// saves the given AppRun, which was read from a logfile, to the database
         /// </summary>
         /// <param name="appRun"></param>
-        private void SaveToDatabase(List<AppRun> appRuns)
+        private void SaveToDatabase(AppRun appRun)
         {
             UnitTestLogEntities context = new UnitTestLogEntities();
-            foreach (AppRun appRun in appRuns)
-            {
-                // dont save apprun in db if already exists
-                var runAlreadyInDb = from st in context.AppRuns where st.StartTime == appRun.StartTime 
-                    && st.ServerName == appRun.ServerName && st.Alias == appRun.Alias select st;
 
-                // if test wasnt completed, no apparea is provided. Dont save this to db
-                if (runAlreadyInDb.Count() > 0 || String.IsNullOrWhiteSpace(appRun.AppArea))
-                    return;
+            // don't save apprun in db if already exists
+            var runAlreadyInDb = from st in context.AppRuns
+                                 where st.StartTime == appRun.StartTime
+                                     && st.ServerName == appRun.ServerName && st.Alias == appRun.Alias
+                                 select st;
 
-                context.AppRuns.Add(appRun);
-            }
+            if (runAlreadyInDb.Count() > 0)
+                return;
+
+            context.AppRuns.Add(appRun);
             context.SaveChanges();
         }
 
@@ -39,47 +38,74 @@ namespace TestResult.Controllers
         /// </summary>
         public void checkDirectories()
         {
-            String[] paths = new string[] { @"\\VMWREWETCDEV\Test$" };
+            string backupDir = @"\\VMWREWETCDEV\Test$\Backup\";
+            String[] paths = new string[] { @"\\VMWREWETCDEV\Apps", @"\\VMWREWETCREL\Apps" };
+
             foreach (string path in paths)
             {
-                string cleanPath = path.EndsWith(@"\") ? path.Remove(path.Length - 1) : path;
                 // ignore if directory is not found
-                if (!Directory.Exists(cleanPath))
+                if (!Directory.Exists(path))
                     continue;
 
-                foreach (string filename in Directory.GetFiles(cleanPath, "*.log", SearchOption.TopDirectoryOnly))
+                foreach (string filename in Directory.GetFiles(path, "*.log", SearchOption.AllDirectories))
                 {
+                    // only process unittest log files
+                    if (!filename.ToLower().Contains("unittest"))
+                        continue;
+
                     try
                     {
                         List<AppRun> runs = ProcessFile(filename);
-                        SaveToDatabase(runs);
+                        bool isSuccessFullyProcessed = false;
+                        foreach (var run in runs)
+                        {
+                            if (String.IsNullOrWhiteSpace(run.ServerName) || String.IsNullOrWhiteSpace(run.AppArea))
+                            {
+                                TimeSpan timeDiff = DateTime.Now - File.GetLastWriteTime(filename);
+
+                                // if last writetime of file was 2 days ago, delete file so it doesn't get processed next time
+                                if (timeDiff.Days > 2)
+                                {
+                                    try
+                                    {
+                                        File.Delete(filename);
+                                    }
+                                    catch
+                                    {
+                                        // don't do anything if file is locked
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                SaveToDatabase(run);
+                                isSuccessFullyProcessed = true;
+                            }
+                        }
+
+                        if (!isSuccessFullyProcessed)
+                            continue;
 
                         // move successfully processed file to backup dir
-                        string backupDir = cleanPath + @"\Backup\";
                         if (!Directory.Exists(backupDir))
                             Directory.CreateDirectory(backupDir);
                         File.Move(filename, backupDir + Path.GetFileName(filename));
 
                         // write log
-                        writeLog(cleanPath, "successfully processed file [" + filename + "]", true);
+                        writeLog("successfully processed file [" + filename + "]", true);
                     }
                     catch (Exception ex)
                     {
                         // log exception
-                        writeLog(cleanPath, "an error occured while processing file [" + filename + "]:", true);
-                        writeLog(cleanPath, ex.Message + nl + ex.StackTrace, false);
+                        writeLog("an error occured while processing file [" + filename + "]:", true);
+                        writeLog(ex.Message + nl + ex.StackTrace, false);
 
                         // log inner exception if available
                         if (ex.InnerException != null)
-                            writeLog(cleanPath, "inner exception: " + nl + ex.InnerException.Message + nl + ex.InnerException.StackTrace, false);
+                            writeLog("inner exception: " + nl + ex.InnerException.Message + nl + ex.InnerException.StackTrace, false);
                     }
                 }
             }
-        }
-
-        private List<AppRun> CleanDbAlias(AppRun r)
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -88,13 +114,16 @@ namespace TestResult.Controllers
         /// <param name="cleanPath"></param>
         /// <param name="message"></param>
         /// <param name="writeDateTime"></param>
-        public void writeLog(string cleanPath, string message, bool writeDateTime)
+        public void writeLog(string message, bool writeDateTime)
         {
+            string logFile = @"\\VMWREWETCDEV\Test$\Backup\ServiceLog.txt";
+
+            // try 5 times to write the log
             for (int i = 0; i < 5; i++)
             {
                 try
                 {
-                    using (StreamWriter file = new StreamWriter(cleanPath + @"\ServiceLog.txt", true))
+                    using (StreamWriter file = new StreamWriter(logFile, true))
                     {
                         string starter = writeDateTime ? DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + " " : 
                             "                    ";
@@ -260,12 +289,13 @@ namespace TestResult.Controllers
                     dummyRun.EndTime = Convert.ToDateTime(line.Replace("Ende: ", ""));
             }
 
+            // apply rundata to all runs in this log file
             foreach (AppRun r in allRuns)
             {
                 r.AppArea = dummyRun.AppArea;
                 r.BuildDate = dummyRun.BuildDate;
                 r.ServerName = dummyRun.ServerName;
-                r.Version = dummyRun.Version != null ? dummyRun.Version : "5.5";
+                r.Version = dummyRun.Version;
                 r.StartTime = dummyRun.StartTime;
                 r.EndTime = dummyRun.EndTime;
             }

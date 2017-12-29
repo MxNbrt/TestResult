@@ -20,6 +20,9 @@ namespace TestResult.Controllers
             try
             {
                 AppRun run = context.AppRuns.Find(Convert.ToInt32(id));
+                if (run == null)
+                    throw new EntitySqlException("Der Testlauf mit der Id '" + id + "' wurde nicht gefunden.");
+
                 context.AppRuns.Remove(run);
                 context.SaveChanges();
 
@@ -27,7 +30,7 @@ namespace TestResult.Controllers
             }
             catch (Exception ex)
             {
-                return CreateResponse("{\"success\": false, \"message\": \"" + ex.ToString() + "\"}");
+                return CreateResponse("{\"success\": false, \"message\": \"" + ex.GetBaseException().Message + "\"}");
             }
         }
 
