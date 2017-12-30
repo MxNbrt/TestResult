@@ -38,9 +38,9 @@ namespace TestResult.Controllers
         /// </summary>
         public void checkDirectories()
         {
-            string backupDir = @"\\VMWREWETCDEV\Test$\Backup\";
             String[] paths = new string[] { @"\\VMWREWETCDEV\Apps", @"\\VMWREWETCREL\Apps" };
-
+            // create another list for the files for better debugging
+            List<string> files = new List<string>();
             foreach (string path in paths)
             {
                 // ignore if directory is not found
@@ -53,58 +53,69 @@ namespace TestResult.Controllers
                     if (!filename.ToLower().Contains("unittest"))
                         continue;
 
-                    try
-                    {
-                        List<AppRun> runs = ProcessFile(filename);
-                        bool isSuccessFullyProcessed = false;
-                        foreach (var run in runs)
-                        {
-                            if (String.IsNullOrWhiteSpace(run.ServerName) || String.IsNullOrWhiteSpace(run.AppArea))
-                            {
-                                TimeSpan timeDiff = DateTime.Now - File.GetLastWriteTime(filename);
+                    files.Add(filename);
+                }
+            }
 
-                                // if last writetime of file was 2 days ago, delete file so it doesn't get processed next time
-                                if (timeDiff.Days > 2)
-                                {
-                                    try
-                                    {
-                                        File.Delete(filename);
-                                    }
-                                    catch
-                                    {
-                                        // don't do anything if file is locked
-                                    }
-                                }
-                            }
-                            else
+            foreach (string filename in files)
+            {
+                processFile(filename);
+            }
+        }
+
+        private void processFile(string filename)
+        {
+            string backupDir = @"\\VMWREWETCDEV\Test$\Backup\";
+            try
+            {
+                List<AppRun> runs = ReadLogFile(filename);
+                bool isSuccessFullyProcessed = false;
+                foreach (var run in runs)
+                {
+                    if (String.IsNullOrWhiteSpace(run.ServerName) || String.IsNullOrWhiteSpace(run.AppArea))
+                    {
+                        TimeSpan timeDiff = DateTime.Now - File.GetLastWriteTime(filename);
+
+                        // if last writetime of file was longer than one day ago, delete file so it doesn't get processed next time
+                        if (timeDiff.Days > 1)
+                        {
+                            try
                             {
-                                SaveToDatabase(run);
-                                isSuccessFullyProcessed = true;
+                                File.Delete(filename);
+                            }
+                            catch
+                            {
+                                // don't do anything if file is locked
                             }
                         }
-
-                        if (!isSuccessFullyProcessed)
-                            continue;
-
-                        // move successfully processed file to backup dir
-                        if (!Directory.Exists(backupDir))
-                            Directory.CreateDirectory(backupDir);
-                        File.Move(filename, backupDir + Path.GetFileName(filename));
-
-                        // write log
-                        writeLog("successfully processed file [" + filename + "]", true);
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        // log exception
-                        writeLog("an error occured while processing file [" + filename + "]:", true);
-                        writeLog(ex.Message + nl + ex.StackTrace, false);
-
-                        // log inner exception if available
-                        if (ex.InnerException != null)
-                            writeLog("inner exception: " + nl + ex.InnerException.Message + nl + ex.InnerException.StackTrace, false);
+                        SaveToDatabase(run);
+                        isSuccessFullyProcessed = true;
                     }
                 }
+
+                if (!isSuccessFullyProcessed)
+                    return;
+
+                // move successfully processed file to backup dir
+                if (!Directory.Exists(backupDir))
+                    Directory.CreateDirectory(backupDir);
+                File.Move(filename, backupDir + Path.GetFileName(filename));
+
+                // write log
+                writeLog("successfully processed file [" + filename + "]", true);
+            }
+            catch (Exception ex)
+            {
+                // log exception
+                writeLog("an error occured while processing file [" + filename + "]:", true);
+                writeLog(ex.Message + nl + ex.StackTrace, false);
+
+                // log inner exception if available
+                if (ex.InnerException != null)
+                    writeLog("inner exception: " + nl + ex.InnerException.Message + nl + ex.InnerException.StackTrace, false);
             }
         }
 
@@ -143,7 +154,7 @@ namespace TestResult.Controllers
         /// </summary>
         /// <param name="filename"></param>
         /// <returns></returns>
-        private List<AppRun> ProcessFile(string filename)
+        private List<AppRun> ReadLogFile(string filename)
         {
             List<AppRun> allRuns = new List<AppRun>();
 

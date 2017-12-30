@@ -7,6 +7,8 @@ using System.Net.Http;
 using System.Text;
 using System.Web.Http;
 using TestResult.Models;
+using System.Data.Entity;
+using System.Linq;
 
 namespace TestResult.Controllers
 {
@@ -19,18 +21,25 @@ namespace TestResult.Controllers
         {
             try
             {
-                AppRun run = context.AppRuns.Find(Convert.ToInt32(id));
+                int intId = Convert.ToInt32(id);
+                var run = context.AppRuns.Where(q => q.AppRunId == intId).First();
                 if (run == null)
                     throw new EntitySqlException("Der Testlauf mit der Id '" + id + "' wurde nicht gefunden.");
+                
+                string sqlQuery = 
+                    "delete from TestError where CaseRunId in (" + 
+                    "	select CaseRunId from TestCaseRun where SuiteRunId in (" + 
+                    "		select SuiteRunId from TestSuiteRun where AppRunId = '" + id + "'" + 
+                    "	)" +
+                    ")";
 
-                context.AppRuns.Remove(run);
-                context.SaveChanges();
-
+                ExecuteQuery(sqlQuery);
                 return CreateResponse("{\"success\": true, \"message\": \"\"}");
             }
             catch (Exception ex)
             {
-                return CreateResponse("{\"success\": false, \"message\": \"" + ex.GetBaseException().Message + "\"}");
+                string msg = ex.GetBaseException().Message.Replace(Environment.NewLine, "");
+                return CreateResponse("{\"success\": false, \"message\": \"" + msg + "\"}");
             }
         }
 
@@ -39,42 +48,50 @@ namespace TestResult.Controllers
             new FileSystemController().checkDirectories();
 
             string sqlQuery =
-                "select AppRunId, AppArea, BuildDate, ServerName, StartTime, EndTime, Alias, DbType, Version, " +
-                "(select count(*) from TestSuiteRun s where s.AppRunId = r.AppRunId) as SuiteCount, " +
-                "(select count(*) from TestCaseRun c where c.SuiteRunId in  " +
-                "    (select SuiteRunId from TestSuiteRun s where s.AppRunId = r.AppRunId) " +
-                ") as CaseCount, " +
-                "(select count(distinct(e.CaseRunId)) from TestError e where e.CaseRunId in " +
-                "(select CaseRunId from TestCaseRun c where c.SuiteRunId in  " +
-                "    (select SuiteRunId from TestSuiteRun s where s.AppRunId = r.AppRunId) " +
-                ")) " +
-                "as ErrorCount " +
-                "from ( " +
-                "SELECT MAX(AppRunId) OVER (partition by AppArea, DbType, Version) MaxAppRunId, * " +
-                "from AppRun) r where AppRunId = MaxAppRunId";
+                "select r.AppRunId, AppArea, BuildDate, ServerName, StartTime, EndTime, Alias, DbType, Version, " +
+                "count(distinct(s.SuiteRunId)) as SuiteCount, " +
+                "count(distinct(c.CaseRunId)) as CaseCount, " +
+                "count(distinct(e.CaseRunId)) as ErrorCount " +
+                
+                "from AppRun r " +
+                "join TestSuiteRun s on s.AppRunId = r.AppRunId " +
+                "join TestCaseRun c on c.SuiteRunId = s.SuiteRunId " +
+                "left join TestError e on e.CaseRunId = c.CaseRunId " +
+                
+                "where r.AppRunId = ( " +
+                "	SELECT TOP 1 AppRunId " +
+                "	from UnitTestLog.dbo.AppRun " +
+                "	where AppArea = r.AppArea and DbType = r.DbType and Version = r.Version " +
+                "	order by StartTime desc " +
+                ") " +
+                
+                "group by r.AppRunId, AppArea, BuildDate, ServerName, StartTime, EndTime, Alias, DbType, Version";
+
             return CreateResponse(ExecuteQuery(sqlQuery));
         }
 
         public HttpResponseMessage GetAppArea(string id)
         {
-            new FileSystemController().checkDirectories();
-
             string sqlQuery =
-                "with TempTable as ( " +
-                "    select AppRunId, AppArea, ServerName, Alias, StartTime, EndTime, DbType, Version,  " +
-                "    (select count(distinct(e.CaseRunId)) from TestError e where e.CaseRunId in  " +
-                "    (select CaseRunId from TestCaseRun c where c.SuiteRunId in   " +
-                "        (select SuiteRunId from TestSuiteRun s where s.AppRunId = r.AppRunId) " +
-                "    )) as ErrorCount " +
-                "    from dbo.AppRun r where lower(AppArea) = '" + id.ToLower() + "' " +
+                "with TempTable as (" +
+                "   select r.AppRunId, r.AppArea, r.ServerName, r.Alias, r.StartTime, r.EndTime, r.DbType, r.Version, " +
+                "   count(distinct(e.CaseRunId)) as ErrorCount" +
+                "   from AppRun r " +
+                "   join TestSuiteRun s on s.AppRunId = r.AppRunId" +
+                "   join TestCaseRun c on c.SuiteRunId = s.SuiteRunId" +
+                "   left join TestError e on e.CaseRunId = c.CaseRunId" +
+                "   where lower(r.AppArea) = '" + id.ToLower() + "' " +
+                "   group by r.AppRunId, r.AppArea, r.ServerName, r.Alias, r.StartTime, r.EndTime, r.DbType, r.Version" +
                 ") " +
-
-                "select AppRunId, AppArea, ServerName, Alias, StartTime, EndTime,   " +
-                "MSSQL55 = case when DbType = 'MSSQL' and Version = '5.5' then ErrorCount else null end,  " +
-                "MSSQL54 = case when DbType = 'MSSQL' and Version = '5.4' then ErrorCount else null end,  " +
+                
+                "select AppRunId, AppArea, ServerName, Alias, StartTime, EndTime, " +
+                "MSSQL55 = case when DbType = 'MSSQL' and Version = '5.5' then ErrorCount else null end, " +
+                "MSSQL54 = case when DbType = 'MSSQL' and Version = '5.4' then ErrorCount else null end, " +
                 "ORACLE55 = case when DbType = 'ORACLE' and Version = '5.5' then ErrorCount else null end, " +
                 "ORACLE54 = case when DbType = 'ORACLE' and Version = '5.4' then ErrorCount else null end " +
-                "from TempTable";
+                
+                "from TempTable " +
+                "order by StartTime asc";
 
             return CreateResponse(ExecuteQuery(sqlQuery));
         }

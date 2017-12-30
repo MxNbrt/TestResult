@@ -9,9 +9,9 @@ namespace TestResult
         public static void RegisterBundles(BundleCollection bundles)
         {
             bundles.Add(new ScriptBundle("~/bundles/jsfiles").Include(
+                "~/scripts/jquery-3.2.1.js",
                 "~/scripts/angular.js",
                 "~/scripts/angular-route.js",
-                "~/scripts/jquery-3.2.1.js",
                 "~/scripts/dx.viz-web.debug.js"
             ));
 
@@ -21,6 +21,7 @@ namespace TestResult
                 "~/customscripts/runctrl.js",
                 "~/customscripts/gridutils.js",
                 "~/customscripts/formutils.js",
+                "~/customscripts/chartutils.js",
                 "~/customscripts/homectrl.js"
             ));
 

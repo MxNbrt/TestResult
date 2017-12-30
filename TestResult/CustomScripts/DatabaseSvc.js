@@ -1,6 +1,6 @@
-﻿angular.module("DatabaseSvc", [])
+﻿angular.module('DatabaseSvc', [])
 
-.service("DatabaseSvc", function ($http, $location) {
+.service('DatabaseSvc', function ($http, $location) {
     this.executeQuery = function (url) {
         return $http.get(url).then(function (response) {
             return response.data;

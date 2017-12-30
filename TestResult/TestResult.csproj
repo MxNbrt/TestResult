@@ -253,6 +253,7 @@
     <Content Include="Content\themes\base\tabs.css" />
     <Content Include="Content\themes\base\theme.css" />
     <Content Include="Content\themes\base\tooltip.css" />
+    <Content Include="CustomScripts\ChartUtils.js" />
     <Content Include="CustomScripts\FormUtils.js" />
     <Content Include="CustomScripts\HomeCtrl.js" />
     <Content Include="CustomScripts\DatabaseSvc.js" />

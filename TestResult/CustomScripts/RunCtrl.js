@@ -1,6 +1,7 @@
-﻿angular.module("Run", [
+﻿angular.module('Run', [
     'DatabaseSvc',
-    'dx'
+    'FormUtils',
+    'GridUtils'
 ])
 
 .controller('RunCtrl', function ($scope, $location, DatabaseSvc) {

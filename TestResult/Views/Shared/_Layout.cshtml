@@ -7,13 +7,13 @@
     <meta name="viewport" content="width=device-width" />
     <link rel="shortcut icon" type="image/png" href="/Content/favicon.ico"/>
     <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/cssfiles")
       
     @Scripts.Render("~/bundles/jsfiles")
     @Scripts.Render("~/bundles/customscripts")
-    @Styles.Render("~/Content/cssfiles")
   </head>
   <body>
-    <div ng-controller="HomeCtrl" layout="column" style="height: 100%;">
+    <div layout="column" style="height: 100%;">
       <aside id="sidebar" class="sidebar sidebar-default open">
         <div class="title">
             TestResult
@@ -25,10 +25,26 @@
               <a href="/" target="_parent">Dashboard</a>
           </li>
           <li class="divider"></li>
-          <li ng-repeat="menuItem in menuAppAreas" ng-show="{{ menuItem.DbType === 'MSSQL' && menuItem.Version === '5.5' }}">
-              <a href="/apparea/{{ menuItem.AppArea | lowercase }}" target="_parent">{{ menuItem.AppArea }}
-                  <span ng-show="{{ menuItem.ErrorCount > 0 }}" class="sidebar-badge badge-circle">{{ menuItem.ErrorCount }}</span>
-              </a>
+          <li>
+              <a href="/apparea/as" target="_parent">As</a>
+          </li>
+          <li>
+              <a href="/apparea/bsgui" target="_parent">BsGui</a>
+          </li>
+          <li>
+              <a href="/apparea/cp" target="_parent">Cp</a>
+          </li>
+          <li>
+              <a href="/apparea/ds" target="_parent">Ds</a>
+          </li>
+          <li>
+              <a href="/apparea/eas" target="_parent">Eas</a>
+          </li>
+          <li>
+              <a href="/apparea/fs" target="_parent">Fs</a>
+          </li>
+          <li>
+              <a href="/apparea/fseba" target="_parent">FsEba</a>
           </li>
         </ul>
       </aside>

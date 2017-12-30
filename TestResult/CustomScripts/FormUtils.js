@@ -1,5 +1,4 @@
 ﻿angular.module('FormUtils', [
-    'GridUtils',
    'dx'
 ]);
 

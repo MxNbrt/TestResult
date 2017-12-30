@@ -137,33 +137,9 @@ function GetGridObject(data, isRunView) {
             }
         ],
         summary: {
-            groupItems: (isRunView) ? [{
-                column: "Message",
-                summaryType: "count",
-                displayFormat: "{0} Fehler"
-            }, {
-                column: "Duration",
-                summaryType: "max",
-                displayFormat: function (secs) {
-                    // convert secs to mins
-                    var mins = Math.floor(secs / 60);
-                    var secs = secs % 60;
-
-                    // round secs to 2 decimals
-                    if (secs > 0)
-                        secs = Math.round(secs * 100) / 100;
-
-                    var timestring = '';
-                    if (mins === 1)
-                        timestring += '1 Minute ';
-                    else if (mins > 1)
-                        timestring += mins + ' Minuten ';
-
-                    return timestring + secs + ' Sekunden';
-                }
-            }] : [{
-                column: "ErrorCount",
-                summaryType: "sum",
+            groupItems: [{
+                column: (isRunView) ? "Message" : "ErrorCount",
+                summaryType: (isRunView) ? "count" : "sum",
                 displayFormat: "{0} Fehler"
             }]
         }
