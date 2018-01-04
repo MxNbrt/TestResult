@@ -18,4 +18,8 @@
     this.GetRunErrors = function (runid) {
         return this.executeQuery('/api/Database/GetRunErrors/' + runid);
     }
+
+    this.RefreshData = function () {
+        return this.executeQuery('/api/Database/RefreshData');
+    }
 })

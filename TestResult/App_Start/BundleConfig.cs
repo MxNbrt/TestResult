@@ -22,7 +22,8 @@ namespace TestResult
                 "~/customscripts/gridutils.js",
                 "~/customscripts/formutils.js",
                 "~/customscripts/chartutils.js",
-                "~/customscripts/homectrl.js"
+                "~/customscripts/homectrl.js",
+                "~/customscripts/refreshctrl.js"
             ));
 
             bundles.Add(new StyleBundle("~/content/cssfiles").Include(

@@ -109,13 +109,13 @@ namespace TestResult.Controllers
             }
             catch (Exception ex)
             {
-                // log exception
-                writeLog("an error occured while processing file [" + filename + "]:", true);
-                writeLog(ex.Message + nl + ex.StackTrace, false);
+                string exceptionText = "an error occured while processing file [" + filename + "]:" + ex.Message;
 
                 // log inner exception if available
                 if (ex.InnerException != null)
-                    writeLog("inner exception: " + nl + ex.InnerException.Message + nl + ex.InnerException.StackTrace, false);
+                    exceptionText += nl + "inner exception: " + ex.InnerException.Message;
+
+                writeLog(exceptionText, true);
             }
         }
 
@@ -127,7 +127,7 @@ namespace TestResult.Controllers
         /// <param name="writeDateTime"></param>
         public void writeLog(string message, bool writeDateTime)
         {
-            string logFile = @"\\VMWREWETCDEV\Test$\Backup\ServiceLog.txt";
+            string logFile = @"\\VMWREWETCDEV\Test$\ServiceLog.txt";
 
             // try 5 times to write the log
             for (int i = 0; i < 5; i++)
@@ -162,7 +162,6 @@ namespace TestResult.Controllers
             TestSuiteRun currentSuite = new TestSuiteRun();
             TestCaseRun currentCase = new TestCaseRun();
             string allErrorLines = "";
-            string currentSuiteError = "";
 
             foreach (string line in File.ReadAllLines(filename))
             {
@@ -198,7 +197,7 @@ namespace TestResult.Controllers
 
                             // remove unnecessary text
                             if (err.Message.Contains(" ist ungleich berechneten Wert ") && err.Message.Contains(", expected: <"))
-                                err.Message = err.Message.Substring(0, err.Message.IndexOf(", expected: <") - 1).Trim();
+                                err.Message = err.Message.Substring(0, err.Message.IndexOf(", expected: <")).Trim();
                             
                             currentCase.TestErrors.Add(err);
                         }
@@ -222,7 +221,6 @@ namespace TestResult.Controllers
 
                         string dbType = line.Substring(line.IndexOf("[") + 1, line.IndexOf("]") - line.IndexOf("[") - 1).Trim();
                         string alias = line.Substring(strStart + 22, line.IndexOf("[") - strStart - 24).Trim();
-                        currentSuiteError = "";
 
                         List<AppRun> run = allRuns.Where(x => (x.Alias == alias && x.DbType == dbType)).ToList();
                         if (run.Count > 0)
@@ -242,37 +240,36 @@ namespace TestResult.Controllers
                         //TC_BsGui_BusinessObjectMassInsertHelper_01 beendet [Dauer: 1,48 Sekunden]
                         string duration = line.Substring(strStart, line.IndexOf("]") - strStart).Trim();
                         currentSuite.Duration = ConvertDurationString(duration);
-
-                        if (!String.IsNullOrWhiteSpace(currentSuiteError))
-                        {
-                            TestCaseRun cr;
-                            if (currentSuite.TestCaseRuns.Count == 0)
-                            {
-                                cr = new TestCaseRun();
-                                if (currentSuiteError.Contains("TearDown"))
-                                    cr.Name = "TearDown";
-                                else
-                                    cr.Name = "SetUp";
-
-                                cr.Duration = currentSuite.Duration;
-                                currentSuite.TestCaseRuns.Add(cr);
-                            }
-                            else
-                            {
-                                cr = currentSuite.TestCaseRuns.First();
-                            }
-
-                            if (currentSuiteError.Contains("#Testfall fehlerhaft:"))
-                                currentSuiteError = currentSuiteError.Replace("#Testfall fehlerhaft:", "").Trim();
-
-                            TestError te = new TestError();
-                            te.Message = currentSuiteError;
-                            cr.TestErrors.Add(te);
-                        }
                     }
-                    else
+                    else if (line.Contains("SetUp FEHLGESCHLAGEN"))
                     {
-                        currentSuiteError = currentSuiteError + line.Trim() + " ";
+                        string currentError = line.Replace("#Testfall fehlerhaft: SetUp FEHLGESCHLAGEN:", "").Trim();
+
+                        if (String.IsNullOrWhiteSpace(currentError))
+                            continue;
+
+                        TestCaseRun cr = new TestCaseRun();
+                        cr.Name = "SetUp";
+                        currentSuite.TestCaseRuns.Add(cr);
+
+                        TestError te = new TestError();
+                        te.Message = currentError;
+                        cr.TestErrors.Add(te);
+                    }
+                    else if (line.Contains("TearDown FEHLGESCHLAGEN"))
+                    {
+                        string currentError = line.Replace("#Testfall fehlerhaft: TearDown FEHLGESCHLAGEN:", "").Trim();
+
+                        if (String.IsNullOrWhiteSpace(currentError))
+                            continue;
+
+                        TestCaseRun cr = new TestCaseRun();
+                        cr.Name = "TearDown";
+                        currentSuite.TestCaseRuns.Add(cr);
+
+                        TestError te = new TestError();
+                        te.Message = currentError;
+                        cr.TestErrors.Add(te);
                     }
                 }
                 // AppRun

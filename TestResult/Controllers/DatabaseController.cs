@@ -34,19 +34,35 @@ namespace TestResult.Controllers
                     ")";
 
                 ExecuteQuery(sqlQuery);
-                return CreateResponse("{\"success\": true, \"message\": \"\"}");
+                return CreateSuccessJson();
             }
             catch (Exception ex)
             {
-                string msg = ex.GetBaseException().Message.Replace(Environment.NewLine, "");
-                return CreateResponse("{\"success\": false, \"message\": \"" + msg + "\"}");
+                return CreateSuccessJson(false, ex.GetBaseException().Message.Replace(Environment.NewLine, ""));
+            }
+        }
+
+        public HttpResponseMessage CreateSuccessJson(bool success = true, string msg = null)
+        {
+            return CreateResponse("{\"success\": " + success.ToString().ToLower() + ", \"message\": \"" + msg + "\"}");
+        }
+
+        [HttpGet]
+        public HttpResponseMessage RefreshData()
+        {
+            try
+            {
+                new FileSystemController().checkDirectories();
+                return CreateSuccessJson();
+            }
+            catch (Exception ex)
+            {
+                return CreateSuccessJson(false, ex.GetBaseException().Message.Replace(Environment.NewLine, ""));
             }
         }
 
         public HttpResponseMessage GetLatest()
         {
-            new FileSystemController().checkDirectories();
-
             string sqlQuery =
                 "select r.AppRunId, AppArea, BuildDate, ServerName, StartTime, EndTime, Alias, DbType, Version, " +
                 "count(distinct(s.SuiteRunId)) as SuiteCount, " +
@@ -98,10 +114,12 @@ namespace TestResult.Controllers
 
         public HttpResponseMessage GetRunErrors(string id)
         {
-            string errors = ExecuteQuery("select s.Name as SuiteName, c.Name as CaseName, c.Duration, e.Message from TestSuiteRun s " +
+            string errors = ExecuteQuery("select s.SuiteRunId as SuiteId, s.Name as SuiteName, c.CaseRunId as CaseId, c.Name as CaseName, " +
+                "c.Duration, e.Message from TestSuiteRun s " +
                 "join TestCaseRun c on s.SuiteRunId = c.SuiteRunId " +
                 "join TestError e on e.CaseRunId = c.CaseRunId " +
-                "where AppRunId = '" + id + "'");
+                "where AppRunId = '" + id + "'" +
+                "order by s.SuiteRunId asc, c.CaseRunId asc");
             string appRun = ExecuteQuery("select AppRunId, AppArea + ' ' + Version as AppArea, BuildDate, ServerName, Alias, DbType, StartTime, EndTime, " +
             "convert(varchar(30), (datediff(mi, StartTime, EndTime) / 60)) + ':' + RIGHT('0' + convert(varchar(30), (datediff(mi, StartTime, EndTime) % 60)), 2)" +
             "as Duration from AppRun where AppRunId='" + id + "'");

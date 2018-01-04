@@ -21,11 +21,10 @@ function GetGridObject(data, isRunView) {
             mode: 'standard'
         },
         paging: { 
-            enabled: !isRunView,
-            pageSize: 24
+            enabled: false
         },
         grouping: {
-            allowCollapsing: isRunView,
+            allowCollapsing: true,
             expandMode: "rowClick"
         },
         groupPanel: {
@@ -81,13 +80,15 @@ function GetGridObject(data, isRunView) {
                 caption: 'Builddatum',
                 calculateCellValue: function (data) {
                     return GetDateTimeString(new Date(data.BuildDate));
-                }
+                },
+                allowSorting: true
             },
             {
                 caption: 'Testdatum',
                 calculateCellValue: function (data) {
                     return GetDateTimeString(new Date(data.StartTime));
-                }
+                },
+                allowSorting: true
             },
             {
                 caption: 'Laufzeit',
@@ -124,7 +125,7 @@ function GetGridObject(data, isRunView) {
                 dataField: 'CaseCount'
             },
             {
-                caption: 'Anzahl Fehler',
+                caption: 'Anzahl fehlerhafte Cases',
                 dataField: 'ErrorCount'
             },
             {

@@ -52,7 +52,7 @@ function GetChartObject(data) {
             enabled: true,
             customizeTooltip: function (arg) {
                 return {
-                    text: GetDateTimeString(new Date(arg.argumentText)) + ': ' + arg.valueText + ' Fehler'
+                    text: GetDateTimeString(new Date(arg.argumentText)) + '\nAnzahl Fehler: ' + arg.valueText
                 };
             }
         },

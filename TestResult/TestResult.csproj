@@ -155,6 +155,7 @@
     <Compile Include="Controllers\DatabaseController.cs" />
     <Compile Include="Controllers\FileSystemController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\RefreshController.cs" />
     <Compile Include="Controllers\RunController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -258,6 +259,7 @@
     <Content Include="CustomScripts\HomeCtrl.js" />
     <Content Include="CustomScripts\DatabaseSvc.js" />
     <Content Include="CustomScripts\GridUtils.js" />
+    <Content Include="CustomScripts\RefreshCtrl.js" />
     <Content Include="CustomScripts\RunCtrl.js" />
     <Content Include="Content\favicon.ico" />
     <Content Include="Global.asax" />
@@ -402,6 +404,7 @@
     <Content Include="Scripts\version.json" />
     <Content Include="Views\AppArea\Index.cshtml" />
     <Content Include="Views\Run\Index.cshtml" />
+    <Content Include="Views\Refresh\Index.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
