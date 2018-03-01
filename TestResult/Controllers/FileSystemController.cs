@@ -169,7 +169,7 @@ namespace TestResult.Controllers
                 if (line.StartsWith("      "))
                 {
                     // start of testcase
-                    if (line.Contains(" gestartet"))
+                    if (line.Trim().EndsWith(" gestartet"))
                     {
                         currentCase = new TestCaseRun();
                         currentCase.Name = line.Substring(0, line.IndexOf(" gestartet")).Trim();

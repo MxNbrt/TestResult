@@ -25,15 +25,27 @@ namespace TestResult.Controllers
                 var run = context.AppRuns.Where(q => q.AppRunId == intId).First();
                 if (run == null)
                     throw new EntitySqlException("Der Testlauf mit der Id '" + id + "' wurde nicht gefunden.");
-                
-                string sqlQuery = 
-                    "delete from TestError where CaseRunId in (" + 
-                    "	select CaseRunId from TestCaseRun where SuiteRunId in (" + 
-                    "		select SuiteRunId from TestSuiteRun where AppRunId = '" + id + "'" + 
+
+                string sqlQuery =
+                    "delete from TestError where CaseRunId in (" +
+                    "	select CaseRunId from TestCaseRun where SuiteRunId in (" +
+                    "		select SuiteRunId from TestSuiteRun where AppRunId = '" + id + "'" +
                     "	)" +
                     ")";
-
                 ExecuteQuery(sqlQuery);
+
+                sqlQuery =
+                    "delete from TestCaseRun where SuiteRunId in (" +
+                    "   select SuiteRunId from TestSuiteRun where AppRunId = '" + id + "'" +
+                    ")";
+                ExecuteQuery(sqlQuery);
+
+                sqlQuery = "delete from TestSuiteRun where AppRunId = '" + id + "'";
+                ExecuteQuery(sqlQuery);
+
+                sqlQuery = "delete from AppRun where AppRunId = '" + id + "'";
+                ExecuteQuery(sqlQuery);
+
                 return CreateSuccessJson();
             }
             catch (Exception ex)

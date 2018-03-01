@@ -25,7 +25,7 @@ function GetGridObject(data, isRunView) {
         },
         grouping: {
             allowCollapsing: true,
-            expandMode: "rowClick"
+            expandMode: "buttonClick"
         },
         groupPanel: {
             visible: true
@@ -37,8 +37,12 @@ function GetGridObject(data, isRunView) {
             if (info.rowType !== 'data')
                 return;
 
-            var difference = new Date(new Date(info.data.StartTime) - new Date(info.data.BuildDate));
-            if (difference.getDate() > 2)
+            var diffBuildStart = new Date(new Date(info.data.StartTime) - new Date(info.data.BuildDate));
+            if (diffBuildStart.getDate() > 2)
+                info.rowElement.css('background', '#ffff99');
+
+            var diffStartNow = new Date(Date.now() - new Date(info.data.StartTime));
+            if (diffStartNow.getDate() > 4)
                 info.rowElement.css('background', '#ffff99');
 
             if (info.data.ErrorCount > 0)
