@@ -19,6 +19,7 @@ namespace TestResult
                 "~/customscripts/databasesvc.js",
                 "~/customscripts/appareactrl.js",
                 "~/customscripts/runctrl.js",
+                "~/customscripts/debugctrl.js",
                 "~/customscripts/gridutils.js",
                 "~/customscripts/formutils.js",
                 "~/customscripts/chartutils.js",

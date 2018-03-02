@@ -3,7 +3,8 @@
    'GridUtils',
    'AppArea',
    'Run',
-   'Refresh'
+   'Refresh',
+   'Debug'
 ])
 
 .controller('HomeCtrl', function ($scope, DatabaseSvc) {

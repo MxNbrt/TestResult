@@ -9,12 +9,56 @@ using System.Web.Http;
 using TestResult.Models;
 using System.Data.Entity;
 using System.Linq;
+using System.Web.Routing;
+using System.IO;
+using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 namespace TestResult.Controllers
 {
     public class DatabaseController : ApiController
     {
         private UnitTestLogEntities context = new UnitTestLogEntities();
+
+        [HttpPost]
+        public HttpResponseMessage GetErrorLog(Object message)
+        {
+            var tokens = new Dictionary<string, string>();
+            foreach (JToken token in ((JObject)message).Children().First().Children().First().Children())
+            {
+                if (token is JProperty)
+                {
+                    var prop = token as JProperty;
+                    tokens.Add(prop.Name, prop.Value.ToString());
+                }
+            }
+
+            if (String.IsNullOrEmpty(tokens["TestSuiteName"]) && String.IsNullOrEmpty(tokens["TestCaseName"])
+                && String.IsNullOrEmpty(tokens["MessageText"]))
+                return CreateSuccessJson();
+
+            string sqlQuery =
+                "select r.AppRunId, StartTime, e.Message, s.Name as SuiteName, c.Name as CaseName, DbType, Version " +
+
+                "from AppRun r " +
+                "join TestSuiteRun s on s.AppRunId = r.AppRunId " +
+                "join TestCaseRun c on c.SuiteRunId = s.SuiteRunId " +
+                "left join TestError e on e.CaseRunId = c.CaseRunId " +
+
+                "where e.Message is not null and e.Message <> '' and DbType = '" + tokens["DbType"] + "' and Version = '" +
+                tokens["Version"] + "' " + "and StartTime >= '" + Convert.ToDateTime(tokens["FromDate"]) + "' ";
+
+            if (!String.IsNullOrEmpty(tokens["TestSuiteName"]))
+                sqlQuery += "and upper(s.Name) like '%" + tokens["TestSuiteName"].Trim().ToUpper() + "%' ";
+
+            if (!String.IsNullOrEmpty(tokens["TestCaseName"]))
+                sqlQuery += "and upper(c.Name) like '%" + tokens["TestCaseName"].Trim().ToUpper() + "%' ";
+
+            if (!String.IsNullOrEmpty(tokens["MessageText"]))
+                sqlQuery += "and upper(e.Message) like '%" + tokens["MessageText"].Trim().ToUpper() + "%' ";
+
+            return CreateResponse(ExecuteQuery(sqlQuery));
+        }
 
         [HttpGet]
         public HttpResponseMessage DeleteRun(string id)
@@ -92,6 +136,7 @@ namespace TestResult.Controllers
                 "	where AppArea = r.AppArea and DbType = r.DbType and Version = r.Version " +
                 "	order by StartTime desc " +
                 ") " +
+                "and r.Version <> 5.5 " +
                 
                 "group by r.AppRunId, AppArea, BuildDate, ServerName, StartTime, EndTime, Alias, DbType, Version";
 
@@ -132,8 +177,9 @@ namespace TestResult.Controllers
                 "join TestError e on e.CaseRunId = c.CaseRunId " +
                 "where AppRunId = '" + id + "'" +
                 "order by s.SuiteRunId asc, c.CaseRunId asc");
-            string appRun = ExecuteQuery("select AppRunId, AppArea + ' ' + Version as AppArea, BuildDate, ServerName, Alias, DbType, StartTime, EndTime, " +
-            "convert(varchar(30), (datediff(mi, StartTime, EndTime) / 60)) + ':' + RIGHT('0' + convert(varchar(30), (datediff(mi, StartTime, EndTime) % 60)), 2)" +
+            string appRun = ExecuteQuery("select AppRunId, AppArea, Version, BuildDate, ServerName, Alias, DbType, StartTime, EndTime, " +
+            "convert(varchar(30), (datediff(mi, StartTime, EndTime) / 60)) + ':' + RIGHT('0' + convert(varchar(30), (datediff(SS, StartTime, EndTime) % 3600 / 60)), 2) + ':'" +
+            "+ RIGHT('0' + convert(varchar(30), (datediff(SS, StartTime, EndTime) % 60)), 2)" +
             "as Duration from AppRun where AppRunId='" + id + "'");
 
             string response = appRun.Remove(appRun.Length - 2) + ",\"Errors\":" + errors + "}]";

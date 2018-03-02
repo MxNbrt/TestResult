@@ -1,5 +1,6 @@
 ﻿angular.module('FormUtils', [
-   'dx'
+   'dx',
+   'GridUtils'
 ]);
 
 function GetFormObject(data) {
@@ -11,6 +12,10 @@ function GetFormObject(data) {
             {
                 dataField: "AppArea",
                 label: { text: "Programm" }
+            },
+            {
+                dataField: "Version",
+                label: { text: "Version" }
             },
             {
                 dataField: "Alias",
@@ -27,28 +32,86 @@ function GetFormObject(data) {
             {
                 dataField: "BuildDate",
                 label: { text: "Builddatum" },
-                editorType: "dxDateBox",
-                editorOptions: { displayFormat: "dd.MM.yyyy" }
+                template: function (data, itemElement) {
+                    itemElement.append("<div>")
+                        .dxTextBox({
+                            value: GetDateTimeString(new Date(data.component.option('formData')[data.dataField]), true)
+                        });
+                }
             },
             {
                 dataField: "StartTime",
                 label: { text: "Testdatum" },
-                editorType: "dxDateBox",
-                editorOptions: { displayFormat: "dd.MM.yyyy" },
-                colspan: 2
-            },
-            {
-                dataField: "StartTime",
-                label: { text: "Startzeit" },
-                editorType: "dxDateBox",
-                editorOptions: { type: "time", displayFormat: "HH:mm" }
+                template: function (data, itemElement) {
+                    itemElement.append("<div>")
+                        .dxTextBox({
+                            value: GetDateTimeString(new Date(data.component.option('formData')[data.dataField]), true)
+                        });
+                }
             },
             {
                 dataField: "Duration",
                 label: { text: "Laufzeit" }
+            }
+        ]
+    };
+};
+
+function GetDebugFormObject(searchButtonClick) {
+    return {
+        colCount: 3,
+        labelLocation: 'top',
+        onEditorEnterKey: searchButtonClick,
+        formData: {
+            "TestSuiteName": "",
+            "TestCaseName": "",
+            "MessageText": "",
+            "DbType": "MSSQL",
+            "Version": "6.0",
+            // default date is now minus one month
+            "FromDate": new Date(new Date().getFullYear(), new Date().getMonth() - 1, new Date().getDate())
+        },
+        items: [
+            {
+                dataField: "TestSuiteName",
+                label: { text: "Suite" }
             },
             {
-                itemType: "empty"
+                dataField: "TestCaseName",
+                label: { text: "Case" }
+            },
+            {
+                dataField: "MessageText",
+                label: { text: "Fehlertext" }
+            },
+            {
+                dataField: "DbType",
+                label: { text: "Datenbank" },
+                editorType: "dxSelectBox",
+                editorOptions: {
+                    items: ["MSSQL", "ORACLE"]
+                }
+            },
+            {
+                dataField: "Version",
+                label: { text: "Version" },
+                editorType: "dxSelectBox",
+                editorOptions: {
+                    items: ["5.4", "5.5", "6.0"]
+                }
+            },
+            {
+                dataField: "FromDate",
+                label: { text: "Ab Datum" },
+                editorType: "dxDateBox",
+                editorOptions: {
+                    width: "100%",
+                    displayFormat: "dd.MM.yyyy"
+                },
+                validationRules: [{
+                    type: "required",
+                    message: "Aus Performancegründen muss ein 'Ab Datum' eingegeben werden."
+                }]
             }
         ]
     };

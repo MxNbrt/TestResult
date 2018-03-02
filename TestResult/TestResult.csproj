@@ -153,6 +153,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AppAreaController.cs" />
     <Compile Include="Controllers\DatabaseController.cs" />
+    <Compile Include="Controllers\DebugController.cs" />
     <Compile Include="Controllers\FileSystemController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\RefreshController.cs" />
@@ -255,6 +256,7 @@
     <Content Include="Content\themes\base\theme.css" />
     <Content Include="Content\themes\base\tooltip.css" />
     <Content Include="CustomScripts\ChartUtils.js" />
+    <Content Include="CustomScripts\DebugCtrl.js" />
     <Content Include="CustomScripts\FormUtils.js" />
     <Content Include="CustomScripts\HomeCtrl.js" />
     <Content Include="CustomScripts\DatabaseSvc.js" />
@@ -405,6 +407,7 @@
     <Content Include="Views\AppArea\Index.cshtml" />
     <Content Include="Views\Run\Index.cshtml" />
     <Content Include="Views\Refresh\Index.cshtml" />
+    <Content Include="Views\Debug\Index.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

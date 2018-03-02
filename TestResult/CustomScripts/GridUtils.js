@@ -2,6 +2,76 @@
    'dx'
 ]);
 
+function GetDebugGridObject(initializedFunction) {
+    return {
+        noDataText: 'Keine Daten gefunden',
+        hoverStateEnabled: true,
+        onRowClick: function (info) {
+            window.location = "/run/" + info.data.AppRunId;
+        },
+        scrolling: {
+            mode: 'standard'
+        },
+        paging: {
+            enabled: false
+        },
+        grouping: {
+            allowCollapsing: true,
+            expandMode: "buttonClick"
+        },
+        columnAutoWidth: true,
+        columnChooser: {
+            enabled: true,
+            mode: 'select',
+            title: 'Spalten'
+        },
+        wordWrapEnabled: true,
+        onInitialized: initializedFunction,
+        columns: [
+            {
+                caption: 'RunId',
+                dataField: 'AppRunId',
+                visible: false
+            },
+            {
+                caption: 'Datum',
+                dataField: 'StartTime',
+                allowSorting: true,
+                sortOrder: 'desc',
+                sortIndex: 0,
+                dataType: "datetime",
+                calculateCellValue: function (data) {
+                    return data.StartTime.replace('T', ' ');
+                }
+            },
+            {
+                caption: 'Fehlermeldung',
+                dataField: 'Message'
+            },
+            {
+                caption: 'SuiteName',
+                dataField: 'SuiteName',
+                visible: false
+            },
+            {
+                caption: 'CaseName',
+                dataField: 'CaseName',
+                visible: false
+            },
+            {
+                caption: 'DbType',
+                dataField: 'DbType',
+                visible: false
+            },
+            {
+                caption: 'Version',
+                dataField: 'Version',
+                visible: false
+            }
+        ]
+    }
+}
+
 function GetGridObject(data, isRunView) {
     return {
         noDataText: (isRunView) ? 'Keine Fehler vorhanden' : 'Logdateien werden gelesen',
@@ -83,14 +153,14 @@ function GetGridObject(data, isRunView) {
             {
                 caption: 'Builddatum',
                 calculateCellValue: function (data) {
-                    return GetDateTimeString(new Date(data.BuildDate));
+                    return GetDateTimeString(new Date(data.BuildDate), true);
                 },
                 allowSorting: true
             },
             {
                 caption: 'Testdatum',
                 calculateCellValue: function (data) {
-                    return GetDateTimeString(new Date(data.StartTime));
+                    return GetDateTimeString(new Date(data.StartTime), true);
                 },
                 allowSorting: true
             },
@@ -151,8 +221,13 @@ function GetGridObject(data, isRunView) {
     };
 };
 
-function GetDateTimeString(date) {
-    return (date.getDate() < 10 ? '0' : '') + date.getDate() + '.' + (date.getMonth() < 9 ? '0' : '') +
-        (date.getMonth() + 1) + '.' + date.getFullYear() + ' ' + (date.getHours() < 10 ? '0' : '') +
-        date.getHours() + ':' + (date.getMinutes() < 10 ? '0' : '') + date.getMinutes();
+function GetDateTimeString(date, getTime) {
+    var result = (date.getDate() < 10 ? '0' : '') + date.getDate() + '.' + (date.getMonth() < 9 ? '0' : '') +
+        (date.getMonth() + 1) + '.' + date.getFullYear();
+
+    if (getTime)
+        result += ' ' + (date.getHours() < 10 ? '0' : '') + date.getHours() + ':' + (date.getMinutes() < 10 ? '0' : '') +
+            date.getMinutes();
+
+    return result;
 };

@@ -1,0 +1,17 @@
+﻿@{
+    ViewBag.Title = "Fehlersuche ";
+}
+
+<div ng-controller="DebugCtrl">
+    <table class="searchTable">
+        <tr>
+            <td>
+                <div dx-form="formOptions"></div>
+            </td>
+            <td style="padding-left:20px;padding-top:20px">
+                <div style="height:35px;width:150px;padding-top:4px" dx-button="submitButtonOptions">Suche</div>
+            </td>
+        </tr>
+    </table>
+    <div dx-data-grid="gridErrors"></div>
+</div>

@@ -689,3 +689,11 @@ aside {
 .sidebar-fixed-right .icon-material-sidebar-arrow:before {
   content: "\e614";
 }
+.searchTable {
+    padding: 20px;
+    margin-bottom: 20px;
+    width: 100%
+}
+#form-container {
+    margin-bottom: 20px;
+}
