@@ -107,14 +107,17 @@ function GetGridObject(data, isRunView) {
             if (info.rowType !== 'data')
                 return;
 
+            // warning if builddate is older than 2 days
             var diffBuildStart = new Date(new Date(info.data.StartTime) - new Date(info.data.BuildDate));
             if (diffBuildStart.getDate() > 2)
                 info.rowElement.css('background', '#ffff99');
 
+            // warning if testdate is older than 2 days and it is not Eas
             var diffStartNow = new Date(Date.now() - new Date(info.data.StartTime));
-            if (diffStartNow.getDate() > 4)
+            if (diffStartNow.getDate() > 3 && info.data.AppArea != 'Eas')
                 info.rowElement.css('background', '#ffff99');
 
+            // error if not all tests succeeded
             if (info.data.ErrorCount > 0)
                 info.rowElement.css('background', '#ffcccc');
         },

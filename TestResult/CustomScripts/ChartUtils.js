@@ -31,9 +31,9 @@ function GetChartObject(data) {
             tickInterval: 1
         },
         series: [
-            { valueField: "MSSQL55", name: "MsSql 5.5", ignoreEmptyPoints: true },
             { valueField: "MSSQL54", name: "MsSql 5.4", ignoreEmptyPoints: true },
-            { valueField: "ORACLE55", name: "Oracle 5.5", ignoreEmptyPoints: true }
+            { valueField: "MSSQL60", name: "MsSql 6.0", ignoreEmptyPoints: true },
+            { valueField: "ORACLE60", name: "Oracle 6.0", ignoreEmptyPoints: true }
         ],
         legend: {
             verticalAlignment: "bottom",
@@ -52,7 +52,7 @@ function GetChartObject(data) {
             enabled: true,
             customizeTooltip: function (arg) {
                 return {
-                    text: GetDateTimeString(new Date(arg.argumentText)) + '\nAnzahl Fehler: ' + arg.valueText
+                    text: GetDateTimeString(new Date(arg.argumentText), true) + '\nAnzahl Fehler: ' + arg.valueText
                 };
             }
         },

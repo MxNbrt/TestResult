@@ -154,14 +154,17 @@ namespace TestResult.Controllers
                 "   join TestCaseRun c on c.SuiteRunId = s.SuiteRunId" +
                 "   left join TestError e on e.CaseRunId = c.CaseRunId" +
                 "   where lower(r.AppArea) = '" + id.ToLower() + "' " +
+                "   and StartTime > cast('" + DateTime.Now.AddMonths(-2).ToString() + "' as datetime)" +
                 "   group by r.AppRunId, r.AppArea, r.ServerName, r.Alias, r.StartTime, r.EndTime, r.DbType, r.Version" +
                 ") " +
                 
                 "select AppRunId, AppArea, ServerName, Alias, StartTime, EndTime, " +
-                "MSSQL55 = case when DbType = 'MSSQL' and Version = '5.5' then ErrorCount else null end, " +
                 "MSSQL54 = case when DbType = 'MSSQL' and Version = '5.4' then ErrorCount else null end, " +
-                "ORACLE55 = case when DbType = 'ORACLE' and Version = '5.5' then ErrorCount else null end, " +
-                "ORACLE54 = case when DbType = 'ORACLE' and Version = '5.4' then ErrorCount else null end " +
+                //"MSSQL55 = case when DbType = 'MSSQL' and Version = '5.5' then ErrorCount else null end, " +
+                "MSSQL60 = case when DbType = 'MSSQL' and Version = '6.0' then ErrorCount else null end, " +
+                "ORACLE54 = case when DbType = 'ORACLE' and Version = '5.4' then ErrorCount else null end, " +
+                //"ORACLE55 = case when DbType = 'ORACLE' and Version = '5.5' then ErrorCount else null end, " +
+                "ORACLE60 = case when DbType = 'ORACLE' and Version = '6.0' then ErrorCount else null end " +
                 
                 "from TempTable " +
                 "order by StartTime asc";
