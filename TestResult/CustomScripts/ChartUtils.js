@@ -31,9 +31,10 @@ function GetChartObject(data) {
             tickInterval: 1
         },
         series: [
-            { valueField: "MSSQL54", name: "MsSql 5.4", ignoreEmptyPoints: true },
-            { valueField: "MSSQL60", name: "MsSql 6.0", ignoreEmptyPoints: true },
-            { valueField: "ORACLE60", name: "Oracle 6.0", ignoreEmptyPoints: true }
+            { valueField: "DEVMSSQL60", name: "Dev MsSql 6.0", ignoreEmptyPoints: true },
+            { valueField: "DEVORACLE60", name: "Dev Oracle 6.0", ignoreEmptyPoints: true },
+            { valueField: "RELMSSQL60", name: "Rel MsSql 6.0", ignoreEmptyPoints: true },
+            { valueField: "RELORACLE60", name: "Rel Oracle 6.0", ignoreEmptyPoints: true }
         ],
         legend: {
             verticalAlignment: "bottom",

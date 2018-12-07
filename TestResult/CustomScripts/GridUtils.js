@@ -206,9 +206,10 @@ function GetGridObject(data, isRunView) {
                 dataField: 'ErrorCount'
             },
             {
-                caption: 'Version',
+                dataField: "ServerName",
+                caption: "Servername",
                 calculateCellValue: function (data) {
-                    return data.Version + ' Datenbank: ' + data.DbType;
+                    return data.ServerName + ' Datenbank: ' + data.DbType;
                 },
                 groupIndex: 0,
                 sortOrder: 'asc'

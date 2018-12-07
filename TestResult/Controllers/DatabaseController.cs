@@ -133,10 +133,9 @@ namespace TestResult.Controllers
                 "where r.AppRunId = ( " +
                 "	SELECT TOP 1 AppRunId " +
                 "	from UnitTestLog.dbo.AppRun " +
-                "	where AppArea = r.AppArea and DbType = r.DbType and Version = r.Version " +
+                "	where AppArea = r.AppArea and DbType = r.DbType and ServerName = r.ServerName " +
                 "	order by StartTime desc " +
                 ") " +
-                "and r.Version <> 5.5 " +
                 
                 "group by r.AppRunId, AppArea, BuildDate, ServerName, StartTime, EndTime, Alias, DbType, Version";
 
@@ -154,17 +153,15 @@ namespace TestResult.Controllers
                 "   join TestCaseRun c on c.SuiteRunId = s.SuiteRunId" +
                 "   left join TestError e on e.CaseRunId = c.CaseRunId" +
                 "   where lower(r.AppArea) = '" + id.ToLower() + "' " +
-                "   and StartTime > cast('" + DateTime.Now.AddMonths(-2).ToString() + "' as datetime)" +
+                "   and StartTime > DATEADD(month, -2, GETDATE())" +
                 "   group by r.AppRunId, r.AppArea, r.ServerName, r.Alias, r.StartTime, r.EndTime, r.DbType, r.Version" +
                 ") " +
                 
                 "select AppRunId, AppArea, ServerName, Alias, StartTime, EndTime, " +
-                "MSSQL54 = case when DbType = 'MSSQL' and Version = '5.4' then ErrorCount else null end, " +
-                //"MSSQL55 = case when DbType = 'MSSQL' and Version = '5.5' then ErrorCount else null end, " +
-                "MSSQL60 = case when DbType = 'MSSQL' and Version = '6.0' then ErrorCount else null end, " +
-                "ORACLE54 = case when DbType = 'ORACLE' and Version = '5.4' then ErrorCount else null end, " +
-                //"ORACLE55 = case when DbType = 'ORACLE' and Version = '5.5' then ErrorCount else null end, " +
-                "ORACLE60 = case when DbType = 'ORACLE' and Version = '6.0' then ErrorCount else null end " +
+                "DEVMSSQL60 = case when DbType = 'MSSQL' and Version = '6.0' and ServerName = 'vmwrewetcdev' then ErrorCount else null end, " +
+                "DEVORACLE60 = case when DbType = 'ORACLE' and Version = '6.0' and ServerName = 'vmwrewetcdev' then ErrorCount else null end, " +
+                "RELMSSQL60 = case when DbType = 'MSSQL' and Version = '6.0' and ServerName = 'vmwrewetcrel' then ErrorCount else null end, " +
+                "RELORACLE60 = case when DbType = 'ORACLE' and Version = '6.0' and ServerName = 'vmwrewetcrel' then ErrorCount else null end " +
                 
                 "from TempTable " +
                 "order by StartTime asc";
